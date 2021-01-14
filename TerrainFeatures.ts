@@ -1,0 +1,10 @@
+export { Coal } from '@civ-clone/base-terrain-feature-coal/Coal';
+export { Fish } from '@civ-clone/base-terrain-feature-fish/Fish';
+export { Game } from '@civ-clone/base-terrain-feature-game/Game';
+export { Gems } from '@civ-clone/base-terrain-feature-gems/Gems';
+export { Gold } from '@civ-clone/base-terrain-feature-gold/Gold';
+export { Horse } from '@civ-clone/base-terrain-feature-horse/Horse';
+export { Oasis } from '@civ-clone/base-terrain-feature-oasis/Oasis';
+export { Oil } from '@civ-clone/base-terrain-feature-oil/Oil';
+export { Seal } from '@civ-clone/base-terrain-feature-seal/Seal';
+export { Shield } from '@civ-clone/base-terrain-feature-shield/Shield';
