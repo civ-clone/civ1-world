@@ -9,7 +9,7 @@ import Tile from '@civ-clone/core-world/Tile';
 import TileImprovement from '@civ-clone/core-tile-improvement/TileImprovement';
 
 export const getRules: (
-  tileImprovementRegistry: TileImprovementRegistry
+  tileImprovementRegistry?: TileImprovementRegistry
 ) => Built[] = (
   tileImprovementRegistry: TileImprovementRegistry = tileImprovementRegistryInstance
 ): Built[] => [

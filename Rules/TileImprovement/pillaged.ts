@@ -7,10 +7,9 @@ import Criterion from '@civ-clone/core-rule/Criterion';
 import Effect from '@civ-clone/core-rule/Effect';
 import Tile from '@civ-clone/core-world/Tile';
 import TileImprovement from '@civ-clone/core-tile-improvement/TileImprovement';
-import Built from '@civ-clone/core-tile-improvement/Rules/Built';
 
 export const getRules: (
-  tileImprovementRegistry: TileImprovementRegistry
+  tileImprovementRegistry?: TileImprovementRegistry
 ) => Pillaged[] = (
   tileImprovementRegistry: TileImprovementRegistry = tileImprovementRegistryInstance
 ): Pillaged[] => [
