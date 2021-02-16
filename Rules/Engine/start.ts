@@ -43,8 +43,6 @@ export const getRules = (
         world: World = new World(generator);
 
       world.build();
-
-      (ruleRegistry as IBuiltRegistry).process(Built, world);
     })
   ),
 ];
