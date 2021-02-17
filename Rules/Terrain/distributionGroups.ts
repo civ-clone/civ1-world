@@ -13,7 +13,7 @@ import {
   Tundra,
 } from '../../Terrains';
 import Effect from '@civ-clone/core-rule/Effect';
-import DistributionGroups from '@civ-clone/core-terrain/Rules/DistributionGroups';
+import DistributionGroups from '@civ-clone/core-world-generator/Rules/DistributionGroups';
 
 export const getRules: () => DistributionGroups[] = (): DistributionGroups[] => [
   new DistributionGroups(

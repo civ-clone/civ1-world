@@ -14,8 +14,8 @@ import {
 } from '../../Terrains';
 import {
   Distribution,
-  IDistributionDefinition,
-} from '@civ-clone/core-terrain/Rules/Distribution';
+  IDistribution,
+} from '@civ-clone/core-world-generator/Rules/Distribution';
 import { Land, Water } from '@civ-clone/core-terrain/Types';
 import Criterion from '@civ-clone/core-rule/Criterion';
 import Effect from '@civ-clone/core-rule/Effect';
@@ -29,7 +29,7 @@ export const getRules: () => Distribution[] = (): Distribution[] => [
     new Criterion((TerrainType: typeof Terrain, mapData: Terrain[]): boolean =>
       mapData.some((terrain: Terrain): boolean => terrain instanceof Land)
     ),
-    new Effect((): IDistributionDefinition[] => [
+    new Effect((): IDistribution[] => [
       {
         from: 0.0,
         to: 0.02,
@@ -60,7 +60,7 @@ export const getRules: () => Distribution[] = (): Distribution[] => [
     new Criterion((TerrainType: typeof Terrain, mapData: Terrain[]): boolean =>
       mapData.some((terrain: Terrain): boolean => terrain instanceof Land)
     ),
-    new Effect((): IDistributionDefinition[] => [
+    new Effect((): IDistribution[] => [
       {
         from: 0.4,
         to: 0.45,
@@ -86,7 +86,7 @@ export const getRules: () => Distribution[] = (): Distribution[] => [
     new Criterion((TerrainType: typeof Terrain, mapData: Terrain[]): boolean =>
       mapData.some((terrain: Terrain): boolean => terrain instanceof Land)
     ),
-    new Effect((): IDistributionDefinition[] => [
+    new Effect((): IDistribution[] => [
       {
         from: 0.05,
         to: 0.2,
@@ -123,7 +123,7 @@ export const getRules: () => Distribution[] = (): Distribution[] => [
     new Criterion((TerrainType: typeof Terrain, mapData: Terrain[]): boolean =>
       mapData.some((terrain: Terrain): boolean => terrain instanceof Land)
     ),
-    new Effect((): IDistributionDefinition[] => [
+    new Effect((): IDistribution[] => [
       {
         fill: true,
       },
@@ -137,7 +137,7 @@ export const getRules: () => Distribution[] = (): Distribution[] => [
     new Criterion((TerrainType: typeof Terrain, mapData: Terrain[]): boolean =>
       mapData.some((terrain: Terrain): boolean => terrain instanceof Land)
     ),
-    new Effect((): IDistributionDefinition[] => [
+    new Effect((): IDistribution[] => [
       {
         from: 0.1,
         to: 0.9,
@@ -155,7 +155,7 @@ export const getRules: () => Distribution[] = (): Distribution[] => [
     new Criterion((TerrainType: typeof Terrain, mapData) =>
       mapData.some((terrain) => terrain instanceof Land)
     ),
-    new Effect((): IDistributionDefinition[] => [
+    new Effect((): IDistribution[] => [
       {
         from: 0.3,
         to: 0.45,
@@ -180,7 +180,7 @@ export const getRules: () => Distribution[] = (): Distribution[] => [
     new Criterion((TerrainType: typeof Terrain, mapData: Terrain[]): boolean =>
       mapData.some((terrain: Terrain): boolean => terrain instanceof Land)
     ),
-    new Effect((): IDistributionDefinition[] => [
+    new Effect((): IDistribution[] => [
       {
         from: 0.1,
         to: 0.9,
@@ -197,7 +197,7 @@ export const getRules: () => Distribution[] = (): Distribution[] => [
     new Criterion((TerrainType: typeof Terrain, mapData: Terrain[]): boolean =>
       mapData.some((terrain: Terrain): boolean => terrain.constructor === Water)
     ),
-    new Effect((): IDistributionDefinition[] => [
+    new Effect((): IDistribution[] => [
       {
         fill: true,
       },
@@ -211,7 +211,7 @@ export const getRules: () => Distribution[] = (): Distribution[] => [
     new Criterion((TerrainType: typeof Terrain, mapData: Terrain[]): boolean =>
       mapData.some((terrain: Terrain): boolean => terrain instanceof Land)
     ),
-    new Effect((): IDistributionDefinition[] => [
+    new Effect((): IDistribution[] => [
       {
         from: 0.1,
         to: 0.2,
@@ -252,7 +252,7 @@ export const getRules: () => Distribution[] = (): Distribution[] => [
     new Criterion((TerrainType: typeof Terrain, mapData: Terrain[]): boolean =>
       mapData.some((terrain: Terrain): boolean => terrain instanceof Land)
     ),
-    new Effect((): IDistributionDefinition[] => [
+    new Effect((): IDistribution[] => [
       {
         from: 0.1,
         to: 0.9,
@@ -270,7 +270,7 @@ export const getRules: () => Distribution[] = (): Distribution[] => [
     new Criterion((TerrainType: typeof Terrain, mapData: Terrain[]): boolean =>
       mapData.some((terrain: Terrain): boolean => terrain instanceof Land)
     ),
-    new Effect((): IDistributionDefinition[] => [
+    new Effect((): IDistribution[] => [
       {
         from: 0.2,
         to: 0.4,
@@ -289,7 +289,7 @@ export const getRules: () => Distribution[] = (): Distribution[] => [
     new Criterion((TerrainType: typeof Terrain, mapData: Terrain[]): boolean =>
       mapData.some((terrain: Terrain): boolean => terrain instanceof Land)
     ),
-    new Effect((): IDistributionDefinition[] => [
+    new Effect((): IDistribution[] => [
       {
         from: 0.02,
         to: 0.15,

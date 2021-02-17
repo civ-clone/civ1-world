@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getRules = void 0;
 const Terrains_1 = require("../../Terrains");
 const Effect_1 = require("@civ-clone/core-rule/Effect");
-const DistributionGroups_1 = require("@civ-clone/core-terrain/Rules/DistributionGroups");
+const DistributionGroups_1 = require("@civ-clone/core-world-generator/Rules/DistributionGroups");
 const getRules = () => [
     new DistributionGroups_1.default(
     // first pass (root terrain types)

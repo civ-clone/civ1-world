@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getRules = void 0;
 const Terrains_1 = require("../../Terrains");
-const Distribution_1 = require("@civ-clone/core-terrain/Rules/Distribution");
+const Distribution_1 = require("@civ-clone/core-world-generator/Rules/Distribution");
 const Types_1 = require("@civ-clone/core-terrain/Types");
 const Criterion_1 = require("@civ-clone/core-rule/Criterion");
 const Effect_1 = require("@civ-clone/core-rule/Effect");

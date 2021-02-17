@@ -1,3 +1,3 @@
-import DistributionGroups from '@civ-clone/core-terrain/Rules/DistributionGroups';
+import DistributionGroups from '@civ-clone/core-world-generator/Rules/DistributionGroups';
 export declare const getRules: () => DistributionGroups[];
 export default getRules;
