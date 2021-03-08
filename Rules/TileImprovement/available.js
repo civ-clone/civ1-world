@@ -31,6 +31,41 @@ const getRules = (playerResearchRegistry = PlayerResearchRegistry_1.instance, ti
     ...[[TileImprovements_1.Road, Advances_1.BridgeBuilding, Terrains_1.River]].map(([Improvement, RequiredAdvance, AvailableTerrain]) => new Available_1.default(new Criterion_1.default((tile, AvailableTileImprovement) => AvailableTileImprovement === Improvement), new Criterion_1.default((tile, AvailableTileImprovement, player) => playerResearchRegistry
         .getByPlayer(player)
         .completed(RequiredAdvance)), new Criterion_1.default((tile) => tile.terrain() instanceof AvailableTerrain))),
+    // ...([
+    //   [Railroad, RailroadAdvance, Road],
+    // ] as [
+    //   typeof TileImprovement,
+    //   typeof Advance,
+    //   typeof TileImprovement
+    // ][]).map(
+    //   ([Improvement, RequiredAdvance, RequiredImprovement]: [
+    //     typeof TileImprovement,
+    //     typeof Advance,
+    //     typeof TileImprovement
+    //   ]): Available =>
+    //     new Available(
+    //       new Criterion(
+    //         (
+    //           tile: Tile,
+    //           AvailableTileImprovement: typeof TileImprovement
+    //         ): boolean => AvailableTileImprovement === Improvement
+    //       ),
+    //       new Criterion(
+    //         (
+    //           tile: Tile,
+    //           AvailableTileImprovement: typeof TileImprovement,
+    //           player: Player
+    //         ): boolean =>
+    //           playerResearchRegistry
+    //             .getByPlayer(player)
+    //             .completed(RequiredAdvance)
+    //       ),
+    //       new Criterion(
+    //         (tile: Tile): boolean => tileImprovementRegistry.getByTile(tile)
+    //           .some((tileImprovement) => tileImprovement instanceof RequiredImprovement)
+    //       )
+    //     )
+    // ),
 ];
 exports.getRules = getRules;
 exports.default = exports.getRules;

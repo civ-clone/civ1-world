@@ -28,15 +28,9 @@ export const getRules = (
           parseInt(engine.option('height', 100), 10),
           parseInt(engine.option('width', 160), 10),
           {
-            landCoverage: parseFloat(
-              engine.option('landCoverage', 0.2 + Math.random() * 0.2)
-            ),
-            landMassReductionScale: parseFloat(
-              engine.option('landMassReductionScale', Math.random() * 5)
-            ),
-            // chanceToBecomeLand: parseInt(engine.option('chanceToBecomeLand', Math.random() / 15), 10),
-            // smoothness
-            maxIterations: parseInt(engine.option('maxIterations', 5), 10),
+            landCoverage: parseFloat(engine.option('landCoverage', 0.4)),
+            landSize: parseFloat(engine.option('landSize', 0.2)),
+            maxIterations: parseInt(engine.option('maxIterations', 20), 10),
           }
         ),
         world: World = new World(generator);

@@ -17,9 +17,12 @@ import available from '../Rules/TileImprovement/available';
 import { expect } from 'chai';
 import { generateFixedWorld } from './yield.test';
 
-describe('tile-improvement:availability', (): void => {
+describe('tile-improvement:availability', async (): Promise<void> => {
   const ruleRegistry = new RuleRegistry(),
-    world = generateFixedWorld(new TerrainFeatureRegistry(), ruleRegistry),
+    world = await generateFixedWorld(
+      new TerrainFeatureRegistry(),
+      ruleRegistry
+    ),
     player = new Player(),
     playerResearchRegistry = new PlayerResearchRegistry(),
     playerResearch = new PlayerResearch(player);

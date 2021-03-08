@@ -50,7 +50,7 @@ import Tile from '@civ-clone/core-world/Tile';
 export const generateFixedWorld = (
   terrainFeatureRegistry: TerrainFeatureRegistry = terrainFeatureRegistryInstance,
   ruleRegistry: RuleRegistry = ruleRegistryInstance
-): World => {
+): Promise<World> => {
   const terrains: [typeof Terrain, ...typeof TerrainFeature[]][] = [
       [Arctic],
       [Arctic, Seal],
@@ -100,17 +100,15 @@ export const generateFixedWorld = (
       )
     );
 
-  world.build(ruleRegistry);
-
-  return world;
+  return world.build(ruleRegistry);
 };
 
-describe('tile:yield', (): void => {
+describe('tile:yield', async (): Promise<void> => {
   const ruleRegistry = new RuleRegistry(),
     terrainFeatureRegistry = new TerrainFeatureRegistry(),
     tileImprovementRegistry = new TileImprovementRegistry(),
     yieldRegistry = new YieldRegistry(),
-    world = generateFixedWorld(terrainFeatureRegistry, ruleRegistry),
+    world = await generateFixedWorld(terrainFeatureRegistry, ruleRegistry),
     player = new Player(ruleRegistry);
 
   ruleRegistry.register(

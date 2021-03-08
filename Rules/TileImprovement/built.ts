@@ -1,4 +1,8 @@
 import {
+  Engine,
+  instance as engineInstance,
+} from '@civ-clone/core-engine/Engine';
+import {
   TileImprovementRegistry,
   instance as tileImprovementRegistryInstance,
 } from '@civ-clone/core-tile-improvement/TileImprovementRegistry';
@@ -9,9 +13,11 @@ import Tile from '@civ-clone/core-world/Tile';
 import TileImprovement from '@civ-clone/core-tile-improvement/TileImprovement';
 
 export const getRules: (
-  tileImprovementRegistry?: TileImprovementRegistry
+  tileImprovementRegistry?: TileImprovementRegistry,
+  engine?: Engine
 ) => Built[] = (
-  tileImprovementRegistry: TileImprovementRegistry = tileImprovementRegistryInstance
+  tileImprovementRegistry: TileImprovementRegistry = tileImprovementRegistryInstance,
+  engine: Engine = engineInstance
 ): Built[] => [
   new Built(
     new Criterion((tile: Tile, tileImprovement: TileImprovement): boolean =>
@@ -27,6 +33,11 @@ export const getRules: (
     )
   ),
   new Built(new Effect((tile: Tile): void => tile.clearYieldCache(null))),
+  new Built(
+    new Effect((tile: Tile, tileImprovement: TileImprovement): void => {
+      engine.emit('tile-improvement:built', tile, tileImprovement);
+    })
+  ),
 ];
 
 export default getRules;

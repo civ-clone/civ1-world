@@ -11,11 +11,9 @@ const getRules = (ruleRegistry = RuleRegistry_1.instance, generatorRegistry = Ge
     new Start_1.default(new Effect_1.default(() => {
         // TODO: Registry.getRandom()
         const availableGenerators = generatorRegistry.entries(), RandomGenerator = availableGenerators[Math.floor(availableGenerators.length * Math.random())], generator = new RandomGenerator(parseInt(Engine_1.instance.option('height', 100), 10), parseInt(Engine_1.instance.option('width', 160), 10), {
-            landCoverage: parseFloat(Engine_1.instance.option('landCoverage', 0.2 + Math.random() * 0.2)),
-            landMassReductionScale: parseFloat(Engine_1.instance.option('landMassReductionScale', Math.random() * 5)),
-            // chanceToBecomeLand: parseInt(engine.option('chanceToBecomeLand', Math.random() / 15), 10),
-            // smoothness
-            maxIterations: parseInt(Engine_1.instance.option('maxIterations', 5), 10),
+            landCoverage: parseFloat(Engine_1.instance.option('landCoverage', 0.4)),
+            landSize: parseFloat(Engine_1.instance.option('landSize', 0.2)),
+            maxIterations: parseInt(Engine_1.instance.option('maxIterations', 20), 10),
         }), world = new World_1.default(generator);
         world.build();
     })),
