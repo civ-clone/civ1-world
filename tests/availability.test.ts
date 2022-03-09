@@ -34,64 +34,66 @@ describe('tile-improvement:availability', async (): Promise<void> => {
 
   const availabilityRules = (ruleRegistry as IAvailableRegistry).get(Available);
 
-  ([
+  (
     [
-      Irrigation,
       [
-        world.get(2, 0), // Desert
-        world.get(6, 0), // Grassland
-        world.get(8, 0), // Hills
-        world.get(16, 0), // Plains
-        world.get(18, 0), // River
+        Irrigation,
+        [
+          world.get(2, 0), // Desert
+          world.get(6, 0), // Grassland
+          world.get(8, 0), // Hills
+          world.get(16, 0), // Plains
+          world.get(18, 0), // River
+        ],
+        [
+          world.get(0, 0), // Arctic
+          world.get(4, 0), // Forest
+          world.get(10, 0), // Jungle
+          world.get(12, 0), // Mountains
+          world.get(14, 0), // Ocean
+          world.get(20, 0), // Swamp
+          world.get(22, 0), // Tundra
+        ],
       ],
       [
-        world.get(0, 0), // Arctic
-        world.get(4, 0), // Forest
-        world.get(10, 0), // Jungle
-        world.get(12, 0), // Mountains
-        world.get(14, 0), // Ocean
-        world.get(20, 0), // Swamp
-        world.get(22, 0), // Tundra
-      ],
-    ],
-    [
-      Mine,
-      [
-        world.get(2, 0), // Desert
-        world.get(8, 0), // Hills
-        world.get(12, 0), // Mountains
-      ],
-      [
-        world.get(0, 0), // Arctic
-        world.get(4, 0), // Forest
-        world.get(6, 0), // Grassland
-        world.get(10, 0), // Jungle
-        world.get(14, 0), // Ocean
-        world.get(16, 0), // Plains
-        world.get(18, 0), // River
-        world.get(20, 0), // Swamp
-        world.get(22, 0), // Tundra
-      ],
-    ],
-    [
-      Road,
-      [
-        world.get(0, 0), // Arctic
-        world.get(2, 0), // Desert
-        world.get(4, 0), // Forest
-        world.get(6, 0), // Grassland
-        world.get(8, 0), // Hills
-        world.get(10, 0), // Jungle
-        world.get(12, 0), // Mountains
-        world.get(16, 0), // Plains
-        world.get(20, 0), // Swamp
-        world.get(22, 0), // Tundra
+        Mine,
+        [
+          world.get(2, 0), // Desert
+          world.get(8, 0), // Hills
+          world.get(12, 0), // Mountains
+        ],
+        [
+          world.get(0, 0), // Arctic
+          world.get(4, 0), // Forest
+          world.get(6, 0), // Grassland
+          world.get(10, 0), // Jungle
+          world.get(14, 0), // Ocean
+          world.get(16, 0), // Plains
+          world.get(18, 0), // River
+          world.get(20, 0), // Swamp
+          world.get(22, 0), // Tundra
+        ],
       ],
       [
-        world.get(14, 0), // Ocean
+        Road,
+        [
+          world.get(0, 0), // Arctic
+          world.get(2, 0), // Desert
+          world.get(4, 0), // Forest
+          world.get(6, 0), // Grassland
+          world.get(8, 0), // Hills
+          world.get(10, 0), // Jungle
+          world.get(12, 0), // Mountains
+          world.get(16, 0), // Plains
+          world.get(20, 0), // Swamp
+          world.get(22, 0), // Tundra
+        ],
+        [
+          world.get(14, 0), // Ocean
+        ],
       ],
-    ],
-  ] as [typeof TileImprovement, Tile[], Tile[]][]).forEach(
+    ] as [typeof TileImprovement, Tile[], Tile[]][]
+  ).forEach(
     ([Improvement, availableTerrains, unavailableTerrains]: [
       typeof TileImprovement,
       Tile[],
@@ -123,9 +125,11 @@ describe('tile-improvement:availability', async (): Promise<void> => {
     }
   );
 
-  ([
-    [Road, world.get(18, 0), BridgeBuilding], // River
-  ] as [typeof TileImprovement, Tile, typeof Advance][]).forEach(
+  (
+    [
+      [Road, world.get(18, 0), BridgeBuilding], // River
+    ] as [typeof TileImprovement, Tile, typeof Advance][]
+  ).forEach(
     ([Improvement, tile, RequiredAdvance]: [
       typeof TileImprovement,
       Tile,

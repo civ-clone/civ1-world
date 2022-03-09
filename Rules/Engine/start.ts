@@ -19,7 +19,8 @@ export const getRules = (
   new Start(
     new Effect((): void => {
       // TODO: Registry.getRandom()
-      const availableGenerators: typeof Generator[] = generatorRegistry.entries(),
+      const availableGenerators: typeof Generator[] =
+          generatorRegistry.entries(),
         RandomGenerator: typeof Generator =
           availableGenerators[
             Math.floor(availableGenerators.length * Math.random())

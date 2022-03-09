@@ -43,22 +43,20 @@ export const getRules: (
   const baseChance = 0.2;
 
   return [
-    ...([
-      [Coal, baseChance, Hills],
-      [Fish, baseChance, Ocean],
-      [Game, baseChance, Forest, Tundra],
-      [Gems, baseChance, Jungle],
-      [Gold, baseChance, Mountains],
-      [Horse, baseChance, Plains],
-      [Oasis, baseChance, Desert],
-      [Oil, baseChance, Swamp],
-      [Seal, baseChance, Arctic],
-      [Shield, 0.5, Grassland, River],
-    ] as [
-      typeof TerrainFeature,
-      number,
-      ...typeof Terrain[]
-    ][]).flatMap(
+    ...(
+      [
+        [Coal, baseChance, Hills],
+        [Fish, baseChance, Ocean],
+        [Game, baseChance, Forest, Tundra],
+        [Gems, baseChance, Jungle],
+        [Gold, baseChance, Mountains],
+        [Horse, baseChance, Plains],
+        [Oasis, baseChance, Desert],
+        [Oil, baseChance, Swamp],
+        [Seal, baseChance, Arctic],
+        [Shield, 0.5, Grassland, River],
+      ] as [typeof TerrainFeature, number, ...typeof Terrain[]][]
+    ).flatMap(
       ([FeatureType, chance, ...terrains]: [
         typeof TerrainFeature,
         number,

@@ -19,7 +19,7 @@ const getRules = (terrainFeatureRegistry = TerrainFeatureRegistry_1.instance) =>
             [TerrainFeatures_1.Oil, baseChance, Terrains_1.Swamp],
             [TerrainFeatures_1.Seal, baseChance, Terrains_1.Arctic],
             [TerrainFeatures_1.Shield, 0.5, Terrains_1.Grassland, Terrains_1.River],
-        ].flatMap(([FeatureType, chance, ...terrains]) => terrains.flatMap((TerrainType) => Feature_1.feature(TerrainType, FeatureType, chance, terrainFeatureRegistry))),
+        ].flatMap(([FeatureType, chance, ...terrains]) => terrains.flatMap((TerrainType) => (0, Feature_1.feature)(TerrainType, FeatureType, chance, terrainFeatureRegistry))),
     ];
 };
 exports.getRules = getRules;

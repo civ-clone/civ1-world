@@ -10,5 +10,5 @@ const feature_1 = require("./Rules/Terrain/feature");
 const pillaged_1 = require("./Rules/TileImprovement/pillaged");
 const start_1 = require("./Rules/Engine/start");
 const yield_1 = require("./Rules/Tile/yield");
-RuleRegistry_1.instance.register(...available_1.default(), ...built_1.default(), ...created_1.default(), ...distribution_1.default(), ...distributionGroups_1.default(), ...feature_1.default(), ...pillaged_1.default(), ...start_1.default(), ...yield_1.default());
+RuleRegistry_1.instance.register(...(0, available_1.default)(), ...(0, built_1.default)(), ...(0, created_1.default)(), ...(0, distribution_1.default)(), ...(0, distributionGroups_1.default)(), ...(0, feature_1.default)(), ...(0, pillaged_1.default)(), ...(0, start_1.default)(), ...(0, yield_1.default)());
 //# sourceMappingURL=registerRules.js.map

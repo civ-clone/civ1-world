@@ -36,23 +36,25 @@ export const getRules: (
   playerResearchRegistry: PlayerResearchRegistry = playerResearchRegistryInstance,
   tileImprovementRegistry: TileImprovementRegistry = tileImprovementRegistryInstance
 ): Available[] => [
-  ...([
-    [Irrigation, Desert, Grassland, Hills, Plains, River],
-    [Mine, Desert, Hills, Mountains],
+  ...(
     [
-      Road,
-      Arctic,
-      Desert,
-      Forest,
-      Grassland,
-      Hills,
-      Jungle,
-      Mountains,
-      Plains,
-      Swamp,
-      Tundra,
-    ],
-  ] as [typeof TileImprovement, ...typeof Terrain[]][]).map(
+      [Irrigation, Desert, Grassland, Hills, Plains, River],
+      [Mine, Desert, Hills, Mountains],
+      [
+        Road,
+        Arctic,
+        Desert,
+        Forest,
+        Grassland,
+        Hills,
+        Jungle,
+        Mountains,
+        Plains,
+        Swamp,
+        Tundra,
+      ],
+    ] as [typeof TileImprovement, ...typeof Terrain[]][]
+  ).map(
     ([Improvement, ...terrains]: [
       typeof TileImprovement,
       ...typeof Terrain[]
@@ -82,11 +84,13 @@ export const getRules: (
       )
   ),
 
-  ...([[Road, BridgeBuilding, River]] as [
-    typeof TileImprovement,
-    typeof Advance,
-    typeof Terrain
-  ][]).map(
+  ...(
+    [[Road, BridgeBuilding, River]] as [
+      typeof TileImprovement,
+      typeof Advance,
+      typeof Terrain
+    ][]
+  ).map(
     ([Improvement, RequiredAdvance, AvailableTerrain]: [
       typeof TileImprovement,
       typeof Advance,

@@ -115,57 +115,59 @@ describe('tile:yield', async (): Promise<void> => {
     ...tileYield(tileImprovementRegistry, terrainFeatureRegistry)
   );
 
-  const expectedData = ([
-    // Food, Production, Trade
-    // [Arctic],
-    [0, 0, 0],
-    // [Arctic, Seal],
-    [2, 0, 0],
-    // [Desert],
-    [0, 1, 0],
-    // [Desert, Oasis],
-    [2, 1, 0],
-    // [Forest],
-    [1, 2, 0],
-    // [Forest, Horse],
-    [2, 2, 0],
-    // [Grassland],
-    [2, 0, 0],
-    // [Grassland, Shield],
-    [2, 1, 0],
-    // [Hills],
-    [1, 0, 0],
-    // [Hills, Coal],
-    [1, 2, 0],
-    // [Jungle],
-    [1, 0, 0],
-    // [Jungle, Gems],
-    [1, 0, 2],
-    // [Mountains],
-    [0, 1, 0],
-    // [Mountains, Gold],
-    [0, 1, 3],
-    // [Ocean],
-    [1, 0, 2],
-    // [Ocean, Fish],
-    [2, 0, 2],
-    // [Plains],
-    [1, 1, 0],
-    // [Plains, Game],
-    [1, 2, 0],
-    // [River],
-    [2, 0, 1],
-    // [River, Shield],
-    [2, 1, 1],
-    // [Swamp],
-    [1, 0, 0],
-    // [Swamp, Oil],
-    [1, 3, 0],
-    // [Tundra],
-    [1, 0, 0],
-    // [Tundra, Game],
-    [2, 0, 0],
-  ] as [number, number, number][]).map(
+  const expectedData = (
+    [
+      // Food, Production, Trade
+      // [Arctic],
+      [0, 0, 0],
+      // [Arctic, Seal],
+      [2, 0, 0],
+      // [Desert],
+      [0, 1, 0],
+      // [Desert, Oasis],
+      [2, 1, 0],
+      // [Forest],
+      [1, 2, 0],
+      // [Forest, Horse],
+      [2, 2, 0],
+      // [Grassland],
+      [2, 0, 0],
+      // [Grassland, Shield],
+      [2, 1, 0],
+      // [Hills],
+      [1, 0, 0],
+      // [Hills, Coal],
+      [1, 2, 0],
+      // [Jungle],
+      [1, 0, 0],
+      // [Jungle, Gems],
+      [1, 0, 2],
+      // [Mountains],
+      [0, 1, 0],
+      // [Mountains, Gold],
+      [0, 1, 3],
+      // [Ocean],
+      [1, 0, 2],
+      // [Ocean, Fish],
+      [2, 0, 2],
+      // [Plains],
+      [1, 1, 0],
+      // [Plains, Game],
+      [1, 2, 0],
+      // [River],
+      [2, 0, 1],
+      // [River, Shield],
+      [2, 1, 1],
+      // [Swamp],
+      [1, 0, 0],
+      // [Swamp, Oil],
+      [1, 3, 0],
+      // [Tundra],
+      [1, 0, 0],
+      // [Tundra, Game],
+      [2, 0, 0],
+    ] as [number, number, number][]
+  ).map(
     ([food, production, trade]: [number, number, number]): [
       typeof Yield,
       number
@@ -200,38 +202,40 @@ describe('tile:yield', async (): Promise<void> => {
     });
   }
 
-  ([
+  (
     [
-      Irrigation,
-      [world.get(2, 0), Food, 1], // Desert
-      [world.get(3, 0), Food, 3], // Desert
-      [world.get(6, 0), Food, 2], // Grassland
-      [world.get(8, 0), Food, 2], // Hills
-      [world.get(16, 0), Food, 2], // Plains
-      [world.get(18, 0), Food, 2], // River
-    ],
-    [
-      Mine,
-      [world.get(2, 0), Production, 2], // Desert
-      [world.get(8, 0), Production, 2], // Hills
-      [world.get(9, 0), Production, 4], // Hills
-      [world.get(12, 0), Production, 3], // Mountains
-    ],
-    [
-      Road,
-      [world.get(0, 0), Trade, 0], // Arctic
-      [world.get(2, 0), Trade, 1], // Desert
-      [world.get(4, 0), Trade, 0], // Forest
-      [world.get(6, 0), Trade, 1], // Grassland
-      [world.get(8, 0), Trade, 0], // Hills
-      [world.get(10, 0), Trade, 0], // Jungle
-      [world.get(12, 0), Trade, 0], // Mountains
-      [world.get(13, 0), Trade, 3], // Mountains
-      [world.get(16, 0), Trade, 1], // Plains
-      [world.get(20, 0), Trade, 0], // Swamp
-      [world.get(22, 0), Trade, 0], // Tundra
-    ],
-  ] as [typeof TileImprovement, ...[Tile, typeof Yield, number][]][]).forEach(
+      [
+        Irrigation,
+        [world.get(2, 0), Food, 1], // Desert
+        [world.get(3, 0), Food, 3], // Desert
+        [world.get(6, 0), Food, 2], // Grassland
+        [world.get(8, 0), Food, 2], // Hills
+        [world.get(16, 0), Food, 2], // Plains
+        [world.get(18, 0), Food, 2], // River
+      ],
+      [
+        Mine,
+        [world.get(2, 0), Production, 2], // Desert
+        [world.get(8, 0), Production, 2], // Hills
+        [world.get(9, 0), Production, 4], // Hills
+        [world.get(12, 0), Production, 3], // Mountains
+      ],
+      [
+        Road,
+        [world.get(0, 0), Trade, 0], // Arctic
+        [world.get(2, 0), Trade, 1], // Desert
+        [world.get(4, 0), Trade, 0], // Forest
+        [world.get(6, 0), Trade, 1], // Grassland
+        [world.get(8, 0), Trade, 0], // Hills
+        [world.get(10, 0), Trade, 0], // Jungle
+        [world.get(12, 0), Trade, 0], // Mountains
+        [world.get(13, 0), Trade, 3], // Mountains
+        [world.get(16, 0), Trade, 1], // Plains
+        [world.get(20, 0), Trade, 0], // Swamp
+        [world.get(22, 0), Trade, 0], // Tundra
+      ],
+    ] as [typeof TileImprovement, ...[Tile, typeof Yield, number][]][]
+  ).forEach(
     ([Improvement, ...values]: [
       typeof TileImprovement,
       ...[Tile, typeof Yield, number][]

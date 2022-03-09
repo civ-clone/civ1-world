@@ -51,21 +51,23 @@ export const getRules: (
   tileImprovementRegistry: TileImprovementRegistry = tileImprovementRegistryInstance,
   terrainFeatureRegistry: TerrainFeatureRegistry = terrainFeatureRegistryInstance
 ) => [
-  ...([
-    [Food, Forest, 1],
-    [Food, Grassland, 2],
-    [Food, Hills, 1],
-    [Food, Jungle, 1],
-    [Food, Ocean, 1],
-    [Food, Plains, 1],
-    [Food, River, 2],
-    [Food, Swamp, 1],
-    [Food, Tundra, 1],
-    [Production, Desert, 1],
-    [Production, Forest, 2],
-    [Production, Mountains, 1],
-    [Production, Plains, 1],
-  ] as [typeof Yield, typeof Terrain, number][]).map(
+  ...(
+    [
+      [Food, Forest, 1],
+      [Food, Grassland, 2],
+      [Food, Hills, 1],
+      [Food, Jungle, 1],
+      [Food, Ocean, 1],
+      [Food, Plains, 1],
+      [Food, River, 2],
+      [Food, Swamp, 1],
+      [Food, Tundra, 1],
+      [Production, Desert, 1],
+      [Production, Forest, 2],
+      [Production, Mountains, 1],
+      [Production, Plains, 1],
+    ] as [typeof Yield, typeof Terrain, number][]
+  ).map(
     ([YieldType, TerrainType, value]: [typeof Yield, typeof Terrain, number]) =>
       new TileYield(
         new Criterion(
@@ -79,24 +81,21 @@ export const getRules: (
       )
   ),
 
-  ...([
-    [Production, Coal, 2],
-    [Food, Fish, 1],
-    [Food, Game, 1, Tundra],
-    [Production, Game, 1, Plains],
-    [Trade, Gems, 2],
-    [Trade, Gold, 3],
-    [Food, Horse, 1],
-    [Food, Oasis, 2],
-    [Production, Oil, 3],
-    [Food, Seal, 2],
-    [Production, Shield, 1],
-  ] as [
-    typeof Yield,
-    typeof TerrainFeature,
-    number,
-    ...typeof Terrain[]
-  ][]).map(
+  ...(
+    [
+      [Production, Coal, 2],
+      [Food, Fish, 1],
+      [Food, Game, 1, Tundra],
+      [Production, Game, 1, Plains],
+      [Trade, Gems, 2],
+      [Trade, Gold, 3],
+      [Food, Horse, 1],
+      [Food, Oasis, 2],
+      [Production, Oil, 3],
+      [Food, Seal, 2],
+      [Production, Shield, 1],
+    ] as [typeof Yield, typeof TerrainFeature, number, ...typeof Terrain[]][]
+  ).map(
     ([YieldType, Feature, value, TerrainType]: [
       typeof Yield,
       typeof TerrainFeature,
@@ -144,14 +143,16 @@ export const getRules: (
     new Effect((tileYield: Yield): void => tileYield.add(1))
   ),
 
-  ...([
-    [Desert, Food, Irrigation, 1],
-    [Desert, Production, Mine, 1],
-    [Hills, Food, Irrigation, 1],
-    [Hills, Production, Mine, 2],
-    [Mountains, Production, Mine, 2],
-    [Plains, Food, Irrigation, 1],
-  ] as [typeof Terrain, typeof Yield, typeof TileImprovement, number][]).map(
+  ...(
+    [
+      [Desert, Food, Irrigation, 1],
+      [Desert, Production, Mine, 1],
+      [Hills, Food, Irrigation, 1],
+      [Hills, Production, Mine, 2],
+      [Mountains, Production, Mine, 2],
+      [Plains, Food, Irrigation, 1],
+    ] as [typeof Terrain, typeof Yield, typeof TileImprovement, number][]
+  ).map(
     ([ImprovedTerrain, YieldType, Improvement, value]: [
       typeof Terrain,
       typeof Yield,

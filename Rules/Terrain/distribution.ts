@@ -31,24 +31,22 @@ export const getRules: () => Distribution[] = (): Distribution[] => [
     ),
     new Effect((): IDistribution[] => [
       {
-        from: 0.0,
+        from: 0,
+        to: 0.01,
+        fill: true,
+      },
+      {
+        from: 0.01,
         to: 0.02,
-        coverage: 1,
-        cluster: true,
-      },
-      {
-        from: 0.02,
-        to: 0.1,
-      },
-      {
-        from: 0.9,
-        to: 0.98,
       },
       {
         from: 0.98,
+        to: 0.99,
+      },
+      {
+        from: 0.99,
         to: 1,
-        coverage: 1,
-        cluster: true,
+        fill: true,
       },
     ])
   ),
@@ -68,9 +66,9 @@ export const getRules: () => Distribution[] = (): Distribution[] => [
       {
         from: 0.45,
         to: 0.55,
-        coverage: 0.25,
+        coverage: 0.025,
         cluster: true,
-        clusterChance: 0.6,
+        clusterChance: 0.1,
       },
       {
         from: 0.55,
@@ -95,8 +93,8 @@ export const getRules: () => Distribution[] = (): Distribution[] => [
         from: 0.2,
         to: 0.4,
         cluster: true,
-        clusterChance: 0.4,
-        coverage: 0.4,
+        clusterChance: 0.1,
+        coverage: 0.1,
       },
       {
         from: 0.4,
@@ -106,8 +104,8 @@ export const getRules: () => Distribution[] = (): Distribution[] => [
         from: 0.6,
         to: 0.8,
         cluster: true,
-        clusterChance: 0.4,
-        coverage: 0.4,
+        clusterChance: 0.1,
+        coverage: 0.1,
       },
       {
         from: 0.8,
@@ -142,8 +140,8 @@ export const getRules: () => Distribution[] = (): Distribution[] => [
         from: 0.1,
         to: 0.9,
         path: true,
-        pathChance: 0.5,
-        coverage: 0.2,
+        pathChance: 0.1,
+        coverage: 0.06,
       },
     ])
   ),
@@ -161,14 +159,14 @@ export const getRules: () => Distribution[] = (): Distribution[] => [
         to: 0.45,
         cluster: true,
         clusterChance: 0.2,
-        coverage: 0.4,
+        coverage: 0.08,
       },
       {
         from: 0.55,
         to: 0.7,
         cluster: true,
         clusterChance: 0.2,
-        coverage: 0.4,
+        coverage: 0.08,
       },
     ])
   ),
@@ -182,9 +180,20 @@ export const getRules: () => Distribution[] = (): Distribution[] => [
     ),
     new Effect((): IDistribution[] => [
       {
+        from: 0.01,
+        to: 0.1,
+        coverage: 0.3,
+        path: true,
+      },
+      {
         from: 0.1,
         to: 0.9,
-        cluster: true,
+        path: true,
+      },
+      {
+        from: 0.9,
+        to: 0.99,
+        coverage: 0.3,
         path: true,
       },
     ])
@@ -213,8 +222,9 @@ export const getRules: () => Distribution[] = (): Distribution[] => [
     ),
     new Effect((): IDistribution[] => [
       {
-        from: 0.1,
+        from: 0.01,
         to: 0.2,
+        coverage: 0.3,
       },
       {
         from: 0.2,
@@ -223,7 +233,7 @@ export const getRules: () => Distribution[] = (): Distribution[] => [
       {
         from: 0.1,
         to: 0.4,
-        path: true,
+        cluster: true,
       },
       {
         from: 0.4,
@@ -236,11 +246,12 @@ export const getRules: () => Distribution[] = (): Distribution[] => [
       {
         from: 0.6,
         to: 0.9,
-        path: true,
+        cluster: true,
       },
       {
         from: 0.8,
-        to: 0.9,
+        to: 0.99,
+        coverage: 0.3,
       },
     ])
   ),
@@ -256,9 +267,9 @@ export const getRules: () => Distribution[] = (): Distribution[] => [
       {
         from: 0.1,
         to: 0.9,
-        coverage: 0.2,
+        coverage: 0.1,
         path: true,
-        pathChance: 0.75,
+        pathChance: 0.5,
       },
     ])
   ),
@@ -291,14 +302,16 @@ export const getRules: () => Distribution[] = (): Distribution[] => [
     ),
     new Effect((): IDistribution[] => [
       {
-        from: 0.02,
+        from: 0.01,
         to: 0.15,
         cluster: true,
+        coverage: 0.15,
       },
       {
         from: 0.85,
-        to: 0.98,
+        to: 0.99,
         cluster: true,
+        coverage: 0.15,
       },
     ])
   ),
