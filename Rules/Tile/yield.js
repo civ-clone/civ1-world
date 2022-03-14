@@ -56,6 +56,9 @@ const getRules = (tileImprovementRegistry = TileImprovementRegistry_1.instance, 
     ...[Terrains_1.Desert, Terrains_1.Grassland, Terrains_1.Plains].map((TerrainType) => new Yield_1.default(new Priorities_1.High(), new Criterion_1.default((tileYield) => tileYield instanceof Yields_1.Trade), new Criterion_1.default((tileYield, tile) => tile.terrain() instanceof TerrainType), new Criterion_1.default((tileYield, tile) => tileImprovementRegistry
         .getByTile(tile)
         .some((improvement) => improvement instanceof TileImprovements_1.Road)), new Effect_1.default((tileYield) => tileYield.add(1)))),
+    new Yield_1.default(new Criterion_1.default((tileYield, tile) => tileImprovementRegistry
+        .getByTile(tile)
+        .some((improvement) => improvement instanceof TileImprovements_1.Railroad)), new Effect_1.default((tileYield) => tileYield.add(Math.floor(tileYield.value() * 0.5), TileImprovements_1.Railroad.name))),
 ];
 exports.getRules = getRules;
 exports.default = exports.getRules;

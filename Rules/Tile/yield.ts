@@ -24,7 +24,7 @@ import {
   Tundra,
 } from '../../Terrains';
 import { Food, Production, Trade } from '../../Yields';
-import { Irrigation, Mine, Road } from '../../TileImprovements';
+import { Irrigation, Mine, Railroad, Road } from '../../TileImprovements';
 import {
   TerrainFeatureRegistry,
   instance as terrainFeatureRegistryInstance,
@@ -36,13 +36,13 @@ import {
 import Criterion from '@civ-clone/core-rule/Criterion';
 import Effect from '@civ-clone/core-rule/Effect';
 import { High } from '@civ-clone/core-rule/Priorities';
-import Or from '@civ-clone/core-rule/Criteria/Or';
 import Terrain from '@civ-clone/core-terrain/Terrain';
 import TerrainFeature from '@civ-clone/core-terrain-feature/TerrainFeature';
 import Tile from '@civ-clone/core-world/Tile';
 import TileImprovement from '@civ-clone/core-tile-improvement/TileImprovement';
 import TileYield from '@civ-clone/core-world/Rules/Yield';
 import Yield from '@civ-clone/core-yield/Yield';
+import Low from '@civ-clone/core-rule/Priorities/Low';
 
 export const getRules: (
   tileImprovementRegistry?: TileImprovementRegistry,
@@ -189,6 +189,20 @@ export const getRules: (
         ),
         new Effect((tileYield: Yield): void => tileYield.add(1))
       )
+  ),
+
+  new TileYield(
+    new Criterion((tileYield: Yield, tile: Tile): boolean =>
+      tileImprovementRegistry
+        .getByTile(tile)
+        .some(
+          (improvement: TileImprovement): boolean =>
+            improvement instanceof Railroad
+        )
+    ),
+    new Effect((tileYield: Yield): void =>
+      tileYield.add(Math.floor(tileYield.value() * 0.5), Railroad.name)
+    )
   ),
 ];
 
