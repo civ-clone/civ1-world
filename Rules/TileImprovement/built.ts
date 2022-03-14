@@ -2,6 +2,7 @@ import {
   Engine,
   instance as engineInstance,
 } from '@civ-clone/core-engine/Engine';
+import { Irrigation, Mine } from '../../TileImprovements';
 import {
   TileImprovementRegistry,
   instance as tileImprovementRegistryInstance,
@@ -37,6 +38,38 @@ export const getRules: (
     new Effect((tile: Tile, tileImprovement: TileImprovement): void => {
       engine.emit('tile-improvement:built', tile, tileImprovement);
     })
+  ),
+  ...(
+    [
+      [Mine, Irrigation],
+      [Irrigation, Mine],
+    ] as [typeof TileImprovement, typeof TileImprovement][]
+  ).map(
+    ([Improvement, ToRemove]) =>
+      new Built(
+        new Criterion(
+          (tile: Tile, tileImprovement: TileImprovement) =>
+            tileImprovement instanceof Improvement
+        ),
+        new Criterion((tile: Tile) =>
+          tileImprovementRegistry
+            .getByTile(tile)
+            .some(
+              (tileImprovement: TileImprovement) =>
+                tileImprovement instanceof ToRemove
+            )
+        ),
+        new Effect((tile: Tile) =>
+          tileImprovementRegistry.unregister(
+            ...tileImprovementRegistry
+              .getByTile(tile)
+              .filter(
+                (tileImprovement: TileImprovement) =>
+                  tileImprovement instanceof ToRemove
+              )
+          )
+        )
+      )
   ),
 ];
 

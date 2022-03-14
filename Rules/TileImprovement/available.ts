@@ -11,18 +11,21 @@ import {
   Swamp,
   Tundra,
 } from '../../Terrains';
-import { Irrigation, Mine, Road } from '../../TileImprovements';
+import { Irrigation, Mine, Railroad, Road } from '../../TileImprovements';
 import {
   PlayerResearchRegistry,
   instance as playerResearchRegistryInstance,
 } from '@civ-clone/core-science/PlayerResearchRegistry';
+import {
+  BridgeBuilding,
+  Railroad as RailroadAdvance,
+} from '@civ-clone/civ1-science/Advances';
 import {
   TileImprovementRegistry,
   instance as tileImprovementRegistryInstance,
 } from '@civ-clone/core-tile-improvement/TileImprovementRegistry';
 import Advance from '@civ-clone/core-science/Advance';
 import Available from '@civ-clone/core-tile-improvement/Rules/Available';
-import { BridgeBuilding } from '@civ-clone/civ1-science/Advances';
 import Criterion from '@civ-clone/core-rule/Criterion';
 import Player from '@civ-clone/core-player/Player';
 import Terrain from '@civ-clone/core-terrain/Terrain';
@@ -119,41 +122,45 @@ export const getRules: (
       )
   ),
 
-  // ...([
-  //   [Railroad, RailroadAdvance, Road],
-  // ] as [
-  //   typeof TileImprovement,
-  //   typeof Advance,
-  //   typeof TileImprovement
-  // ][]).map(
-  //   ([Improvement, RequiredAdvance, RequiredImprovement]: [
-  //     typeof TileImprovement,
-  //     typeof Advance,
-  //     typeof TileImprovement
-  //   ]): Available =>
-  //     new Available(
-  //       new Criterion(
-  //         (
-  //           tile: Tile,
-  //           AvailableTileImprovement: typeof TileImprovement
-  //         ): boolean => AvailableTileImprovement === Improvement
-  //       ),
-  //       new Criterion(
-  //         (
-  //           tile: Tile,
-  //           AvailableTileImprovement: typeof TileImprovement,
-  //           player: Player
-  //         ): boolean =>
-  //           playerResearchRegistry
-  //             .getByPlayer(player)
-  //             .completed(RequiredAdvance)
-  //       ),
-  //       new Criterion(
-  //         (tile: Tile): boolean => tileImprovementRegistry.getByTile(tile)
-  //           .some((tileImprovement) => tileImprovement instanceof RequiredImprovement)
-  //       )
-  //     )
-  // ),
+  ...(
+    [[Railroad, RailroadAdvance, Road]] as [
+      typeof TileImprovement,
+      typeof Advance,
+      typeof TileImprovement
+    ][]
+  ).map(
+    ([Improvement, RequiredAdvance, RequiredImprovement]: [
+      typeof TileImprovement,
+      typeof Advance,
+      typeof TileImprovement
+    ]): Available =>
+      new Available(
+        new Criterion(
+          (
+            tile: Tile,
+            AvailableTileImprovement: typeof TileImprovement
+          ): boolean => AvailableTileImprovement === Improvement
+        ),
+        new Criterion(
+          (
+            tile: Tile,
+            AvailableTileImprovement: typeof TileImprovement,
+            player: Player
+          ): boolean =>
+            playerResearchRegistry
+              .getByPlayer(player)
+              .completed(RequiredAdvance)
+        ),
+        new Criterion((tile: Tile): boolean =>
+          tileImprovementRegistry
+            .getByTile(tile)
+            .some(
+              (tileImprovement) =>
+                tileImprovement instanceof RequiredImprovement
+            )
+        )
+      )
+  ),
 ];
 
 export default getRules;

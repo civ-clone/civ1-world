@@ -10,7 +10,6 @@ const TileImprovementRegistry_1 = require("@civ-clone/core-tile-improvement/Tile
 const Criterion_1 = require("@civ-clone/core-rule/Criterion");
 const Effect_1 = require("@civ-clone/core-rule/Effect");
 const Priorities_1 = require("@civ-clone/core-rule/Priorities");
-const Or_1 = require("@civ-clone/core-rule/Criteria/Or");
 const Yield_1 = require("@civ-clone/core-world/Rules/Yield");
 const getRules = (tileImprovementRegistry = TileImprovementRegistry_1.instance, terrainFeatureRegistry = TerrainFeatureRegistry_1.instance) => [
     ...[
@@ -31,16 +30,15 @@ const getRules = (tileImprovementRegistry = TileImprovementRegistry_1.instance, 
     ...[
         [Yields_1.Production, TerrainFeatures_1.Coal, 2],
         [Yields_1.Food, TerrainFeatures_1.Fish, 1],
-        [Yields_1.Food, TerrainFeatures_1.Game, 1, Terrains_1.Tundra],
-        [Yields_1.Production, TerrainFeatures_1.Game, 1, Terrains_1.Plains],
+        [Yields_1.Food, TerrainFeatures_1.Game, 1],
         [Yields_1.Trade, TerrainFeatures_1.Gems, 2],
         [Yields_1.Trade, TerrainFeatures_1.Gold, 3],
-        [Yields_1.Food, TerrainFeatures_1.Horse, 1],
+        [Yields_1.Production, TerrainFeatures_1.Horse, 1],
         [Yields_1.Food, TerrainFeatures_1.Oasis, 2],
         [Yields_1.Production, TerrainFeatures_1.Oil, 3],
         [Yields_1.Food, TerrainFeatures_1.Seal, 2],
         [Yields_1.Production, TerrainFeatures_1.Shield, 1],
-    ].map(([YieldType, Feature, value, TerrainType]) => new Yield_1.default(new Or_1.default(new Criterion_1.default((tileYield, tile) => !TerrainType), new Criterion_1.default((tileYield, tile) => tile.terrain() instanceof TerrainType)), new Criterion_1.default((tileYield) => tileYield instanceof YieldType), new Criterion_1.default((tileYield, tile) => terrainFeatureRegistry
+    ].map(([YieldType, Feature, value]) => new Yield_1.default(new Criterion_1.default((tileYield) => tileYield instanceof YieldType), new Criterion_1.default((tileYield, tile) => terrainFeatureRegistry
         .getByTerrain(tile.terrain())
         .some((feature) => feature instanceof Feature)), new Effect_1.default((tileYield) => tileYield.add(value)))),
     new Yield_1.default(new Priorities_1.High(), new Criterion_1.default((tileYield) => tileYield instanceof Yields_1.Trade), new Criterion_1.default((tileYield, tile) => tile.terrain() instanceof Terrains_1.Ocean), new Effect_1.default((tileYield) => tileYield.add(2))),

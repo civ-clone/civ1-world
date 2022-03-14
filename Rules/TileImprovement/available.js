@@ -4,9 +4,9 @@ exports.getRules = void 0;
 const Terrains_1 = require("../../Terrains");
 const TileImprovements_1 = require("../../TileImprovements");
 const PlayerResearchRegistry_1 = require("@civ-clone/core-science/PlayerResearchRegistry");
+const Advances_1 = require("@civ-clone/civ1-science/Advances");
 const TileImprovementRegistry_1 = require("@civ-clone/core-tile-improvement/TileImprovementRegistry");
 const Available_1 = require("@civ-clone/core-tile-improvement/Rules/Available");
-const Advances_1 = require("@civ-clone/civ1-science/Advances");
 const Criterion_1 = require("@civ-clone/core-rule/Criterion");
 const getRules = (playerResearchRegistry = PlayerResearchRegistry_1.instance, tileImprovementRegistry = TileImprovementRegistry_1.instance) => [
     ...[
@@ -31,41 +31,11 @@ const getRules = (playerResearchRegistry = PlayerResearchRegistry_1.instance, ti
     ...[[TileImprovements_1.Road, Advances_1.BridgeBuilding, Terrains_1.River]].map(([Improvement, RequiredAdvance, AvailableTerrain]) => new Available_1.default(new Criterion_1.default((tile, AvailableTileImprovement) => AvailableTileImprovement === Improvement), new Criterion_1.default((tile, AvailableTileImprovement, player) => playerResearchRegistry
         .getByPlayer(player)
         .completed(RequiredAdvance)), new Criterion_1.default((tile) => tile.terrain() instanceof AvailableTerrain))),
-    // ...([
-    //   [Railroad, RailroadAdvance, Road],
-    // ] as [
-    //   typeof TileImprovement,
-    //   typeof Advance,
-    //   typeof TileImprovement
-    // ][]).map(
-    //   ([Improvement, RequiredAdvance, RequiredImprovement]: [
-    //     typeof TileImprovement,
-    //     typeof Advance,
-    //     typeof TileImprovement
-    //   ]): Available =>
-    //     new Available(
-    //       new Criterion(
-    //         (
-    //           tile: Tile,
-    //           AvailableTileImprovement: typeof TileImprovement
-    //         ): boolean => AvailableTileImprovement === Improvement
-    //       ),
-    //       new Criterion(
-    //         (
-    //           tile: Tile,
-    //           AvailableTileImprovement: typeof TileImprovement,
-    //           player: Player
-    //         ): boolean =>
-    //           playerResearchRegistry
-    //             .getByPlayer(player)
-    //             .completed(RequiredAdvance)
-    //       ),
-    //       new Criterion(
-    //         (tile: Tile): boolean => tileImprovementRegistry.getByTile(tile)
-    //           .some((tileImprovement) => tileImprovement instanceof RequiredImprovement)
-    //       )
-    //     )
-    // ),
+    ...[[TileImprovements_1.Railroad, Advances_1.Railroad, TileImprovements_1.Road]].map(([Improvement, RequiredAdvance, RequiredImprovement]) => new Available_1.default(new Criterion_1.default((tile, AvailableTileImprovement) => AvailableTileImprovement === Improvement), new Criterion_1.default((tile, AvailableTileImprovement, player) => playerResearchRegistry
+        .getByPlayer(player)
+        .completed(RequiredAdvance)), new Criterion_1.default((tile) => tileImprovementRegistry
+        .getByTile(tile)
+        .some((tileImprovement) => tileImprovement instanceof RequiredImprovement)))),
 ];
 exports.getRules = getRules;
 exports.default = exports.getRules;

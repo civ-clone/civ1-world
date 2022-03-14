@@ -85,33 +85,22 @@ export const getRules: (
     [
       [Production, Coal, 2],
       [Food, Fish, 1],
-      [Food, Game, 1, Tundra],
-      [Production, Game, 1, Plains],
+      [Food, Game, 1],
       [Trade, Gems, 2],
       [Trade, Gold, 3],
-      [Food, Horse, 1],
+      [Production, Horse, 1],
       [Food, Oasis, 2],
       [Production, Oil, 3],
       [Food, Seal, 2],
       [Production, Shield, 1],
-    ] as [typeof Yield, typeof TerrainFeature, number, ...typeof Terrain[]][]
+    ] as [typeof Yield, typeof TerrainFeature, number][]
   ).map(
-    ([YieldType, Feature, value, TerrainType]: [
+    ([YieldType, Feature, value]: [
       typeof Yield,
       typeof TerrainFeature,
-      number,
-      ...typeof Terrain[]
+      number
     ]): TileYield =>
       new TileYield(
-        new Or(
-          new Criterion(
-            (tileYield: Yield, tile: Tile): boolean => !TerrainType
-          ),
-          new Criterion(
-            (tileYield: Yield, tile: Tile): boolean =>
-              tile.terrain() instanceof TerrainType
-          )
-        ),
         new Criterion(
           (tileYield: Yield): boolean => tileYield instanceof YieldType
         ),

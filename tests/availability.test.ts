@@ -2,12 +2,13 @@ import {
   Available,
   IAvailableRegistry,
 } from '@civ-clone/core-tile-improvement/Rules/Available';
-import { Irrigation, Mine, Road } from '../TileImprovements';
+import { Irrigation, Mine, Railroad, Road } from '../TileImprovements';
 import Advance from '@civ-clone/core-science/Advance';
 import { BridgeBuilding } from '@civ-clone/civ1-science/Advances';
 import Player from '@civ-clone/core-player/Player';
 import PlayerResearch from '@civ-clone/core-science/PlayerResearch';
 import PlayerResearchRegistry from '@civ-clone/core-science/PlayerResearchRegistry';
+import { Railroad as RailroadAdvance } from '@civ-clone/civ1-science/Advances';
 import RuleRegistry from '@civ-clone/core-rule/RuleRegistry';
 import TerrainFeatureRegistry from '@civ-clone/core-terrain-feature/TerrainFeatureRegistry';
 import Tile from '@civ-clone/core-world/Tile';
@@ -25,11 +26,13 @@ describe('tile-improvement:availability', async (): Promise<void> => {
     ),
     player = new Player(),
     playerResearchRegistry = new PlayerResearchRegistry(),
-    playerResearch = new PlayerResearch(player);
+    playerResearch = new PlayerResearch(player),
+    tileImprovementRegistry = new TileImprovementRegistry();
+
   playerResearchRegistry.register(playerResearch);
 
   ruleRegistry.register(
-    ...available(playerResearchRegistry, new TileImprovementRegistry())
+    ...available(playerResearchRegistry, tileImprovementRegistry)
   );
 
   const availabilityRules = (ruleRegistry as IAvailableRegistry).get(Available);
@@ -92,17 +95,51 @@ describe('tile-improvement:availability', async (): Promise<void> => {
           world.get(14, 0), // Ocean
         ],
       ],
-    ] as [typeof TileImprovement, Tile[], Tile[]][]
-  ).forEach(
-    ([Improvement, availableTerrains, unavailableTerrains]: [
+      [
+        Railroad,
+        [
+          world.get(0, 0), // Arctic
+          world.get(2, 0), // Desert
+          world.get(4, 0), // Forest
+          world.get(6, 0), // Grassland
+          world.get(8, 0), // Hills
+          world.get(10, 0), // Jungle
+          world.get(12, 0), // Mountains
+          world.get(16, 0), // Plains
+          world.get(18, 0), // River
+          world.get(20, 0), // Swamp
+          world.get(22, 0), // Tundra
+        ],
+        [
+          world.get(14, 0), // Ocean
+        ],
+        (tile: Tile) => {
+          tileImprovementRegistry.register(new Road(tile, ruleRegistry));
+
+          playerResearch.addAdvance(RailroadAdvance);
+        },
+      ],
+    ] as [
       typeof TileImprovement,
       Tile[],
-      Tile[]
+      Tile[],
+      (tile: Tile) => void | undefined
+    ][]
+  ).forEach(
+    ([Improvement, availableTerrains, unavailableTerrains, setup]: [
+      typeof TileImprovement,
+      Tile[],
+      Tile[],
+      (tile: Tile) => void | undefined
     ]): void => {
       availableTerrains.forEach((tile: Tile): void => {
         it(`should be possible to build ${Improvement.name} on ${
           tile.terrain().constructor.name
         }`, (): void => {
+          if (setup) {
+            setup(tile);
+          }
+
           expect(
             availabilityRules.some((rule: Available): boolean =>
               rule.validate(tile, Improvement, player)
@@ -147,7 +184,7 @@ describe('tile-improvement:availability', async (): Promise<void> => {
 
       it(`should be possible to build ${Improvement.name} on ${
         tile.terrain().constructor.name
-      } without discovering ${RequiredAdvance.name}`, (): void => {
+      } once discovered ${RequiredAdvance.name}`, (): void => {
         playerResearch.addAdvance(RequiredAdvance);
 
         expect(
