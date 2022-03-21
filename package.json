@@ -63,6 +63,7 @@
     "@civ-clone/base-tile-improvement-railroad": "^0.1.0",
     "@civ-clone/base-tile-improvement-road": "^0.1.0",
     "@civ-clone/civ1-science": "github:civ-clone/civ1-science",
+    "@civ-clone/civ1-government": "github:civ-clone/civ1-government",
     "@civ-clone/core-engine": "^0.1.0",
     "@civ-clone/core-rule": "^0.1.0",
     "@civ-clone/core-science": "^0.1.0",
