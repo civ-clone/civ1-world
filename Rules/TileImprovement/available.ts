@@ -123,18 +123,42 @@ export const getRules: (
   ),
 
   ...(
-    [[Railroad, RailroadAdvance, Road]] as [
+    [
+      [
+        Railroad,
+        RailroadAdvance,
+        Road,
+        Arctic,
+        Desert,
+        Forest,
+        Grassland,
+        Hills,
+        Jungle,
+        Mountains,
+        Plains,
+        River,
+        Swamp,
+        Tundra,
+      ],
+    ] as [
       typeof TileImprovement,
       typeof Advance,
-      typeof TileImprovement
+      typeof TileImprovement,
+      ...typeof Terrain[]
     ][]
   ).map(
-    ([Improvement, RequiredAdvance, RequiredImprovement]: [
+    ([Improvement, RequiredAdvance, RequiredImprovement, ...terrainTypes]: [
       typeof TileImprovement,
       typeof Advance,
-      typeof TileImprovement
+      typeof TileImprovement,
+      ...typeof Terrain[]
     ]): Available =>
       new Available(
+        new Criterion((tile: Tile): boolean =>
+          terrainTypes.some(
+            (TerrainType) => tile.terrain() instanceof TerrainType
+          )
+        ),
         new Criterion(
           (
             tile: Tile,

@@ -24,4 +24,4 @@ const getRules = () => [
 ];
 exports.getRules = getRules;
 exports.default = exports.getRules;
-//# sourceMappingURL=distributionGroups.js.map
+//# sourceMappingURL=distribution-groups.js.map

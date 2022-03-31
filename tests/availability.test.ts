@@ -92,8 +92,86 @@ describe('tile-improvement:availability', async (): Promise<void> => {
           world.get(22, 0), // Tundra
         ],
         [
+          world.get(18, 0), // River
           world.get(14, 0), // Ocean
         ],
+      ],
+      [
+        Road,
+        [
+          world.get(18, 0), // River
+        ],
+        [],
+        () => playerResearch.addAdvance(BridgeBuilding),
+        () => playerResearch.complete().pop(),
+        ' once you have discovered BridgeBuilding',
+      ],
+      [
+        Railroad,
+        [],
+        [
+          world.get(0, 0), // Arctic
+          world.get(2, 0), // Desert
+          world.get(4, 0), // Forest
+          world.get(6, 0), // Grassland
+          world.get(8, 0), // Hills
+          world.get(10, 0), // Jungle
+          world.get(12, 0), // Mountains
+          world.get(16, 0), // Plains
+          world.get(18, 0), // River
+          world.get(20, 0), // Swamp
+          world.get(22, 0), // Tundra
+          world.get(14, 0), // Ocean
+        ],
+        null,
+        null,
+        ' without discovering Railroad or an existing Road',
+      ],
+      [
+        Railroad,
+        [],
+        [
+          world.get(0, 0), // Arctic
+          world.get(2, 0), // Desert
+          world.get(4, 0), // Forest
+          world.get(6, 0), // Grassland
+          world.get(8, 0), // Hills
+          world.get(10, 0), // Jungle
+          world.get(12, 0), // Mountains
+          world.get(16, 0), // Plains
+          world.get(18, 0), // River
+          world.get(20, 0), // Swamp
+          world.get(22, 0), // Tundra
+          world.get(14, 0), // Ocean
+        ],
+        () => playerResearch.addAdvance(RailroadAdvance),
+        () => playerResearch.complete().pop(),
+        ' without an existing Road',
+      ],
+      [
+        Railroad,
+        [],
+        [
+          world.get(0, 0), // Arctic
+          world.get(2, 0), // Desert
+          world.get(4, 0), // Forest
+          world.get(6, 0), // Grassland
+          world.get(8, 0), // Hills
+          world.get(10, 0), // Jungle
+          world.get(12, 0), // Mountains
+          world.get(16, 0), // Plains
+          world.get(18, 0), // River
+          world.get(20, 0), // Swamp
+          world.get(22, 0), // Tundra
+          world.get(14, 0), // Ocean
+        ],
+        (tile: Tile) =>
+          tileImprovementRegistry.register(new Road(tile, ruleRegistry)),
+        (tile: Tile) =>
+          tileImprovementRegistry.unregister(
+            ...tileImprovementRegistry.getByTile(tile)
+          ),
+        ' without discovering Railroad',
       ],
       [
         Railroad,
@@ -118,24 +196,43 @@ describe('tile-improvement:availability', async (): Promise<void> => {
 
           playerResearch.addAdvance(RailroadAdvance);
         },
+        (tile: Tile) => {
+          tileImprovementRegistry.unregister(
+            ...tileImprovementRegistry.getByTile(tile)
+          );
+
+          playerResearch.complete().pop();
+        },
+        ' once you have discovered Railroad and there is an existing Road',
       ],
     ] as [
       typeof TileImprovement,
       Tile[],
       Tile[],
-      (tile: Tile) => void | undefined
+      (tile: Tile) => void | null,
+      (tile: Tile) => void | null,
+      string
     ][]
   ).forEach(
-    ([Improvement, availableTerrains, unavailableTerrains, setup]: [
+    ([
+      Improvement,
+      availableTerrains,
+      unavailableTerrains,
+      setup,
+      takeDown,
+      message,
+    ]: [
       typeof TileImprovement,
       Tile[],
       Tile[],
-      (tile: Tile) => void | undefined
+      (tile: Tile) => void | null,
+      (tile: Tile) => void | null,
+      string
     ]): void => {
       availableTerrains.forEach((tile: Tile): void => {
         it(`should be possible to build ${Improvement.name} on ${
           tile.terrain().constructor.name
-        }`, (): void => {
+        }${message ?? ''}`, (): void => {
           if (setup) {
             setup(tile);
           }
@@ -145,55 +242,31 @@ describe('tile-improvement:availability', async (): Promise<void> => {
               rule.validate(tile, Improvement, player)
             )
           ).to.true;
+
+          if (takeDown) {
+            takeDown(tile);
+          }
         });
       });
 
       unavailableTerrains.forEach((tile: Tile): void => {
         it(`should not be possible to build ${Improvement.name} on ${
           tile.terrain().constructor.name
-        }`, (): void => {
+        }${message ?? ''}`, (): void => {
+          if (setup) {
+            setup(tile);
+          }
+
           expect(
             availabilityRules.some((rule: Available): boolean =>
               rule.validate(tile, Improvement, player)
             )
           ).to.false;
+
+          if (takeDown) {
+            takeDown(tile);
+          }
         });
-      });
-    }
-  );
-
-  (
-    [
-      [Road, world.get(18, 0), BridgeBuilding], // River
-    ] as [typeof TileImprovement, Tile, typeof Advance][]
-  ).forEach(
-    ([Improvement, tile, RequiredAdvance]: [
-      typeof TileImprovement,
-      Tile,
-      typeof Advance
-    ]) => {
-      it(`should not be possible to build ${Improvement.name} on ${
-        tile.terrain().constructor.name
-      } without discovering ${RequiredAdvance.name}`, (): void => {
-        expect(
-          availabilityRules.some((rule: Available): boolean =>
-            rule.validate(tile, Improvement, player)
-          )
-        ).to.false;
-      });
-
-      it(`should be possible to build ${Improvement.name} on ${
-        tile.terrain().constructor.name
-      } once discovered ${RequiredAdvance.name}`, (): void => {
-        playerResearch.addAdvance(RequiredAdvance);
-
-        expect(
-          availabilityRules.some((rule: Available): boolean =>
-            rule.validate(tile, Improvement, player)
-          )
-        ).to.true;
-
-        playerResearch.complete().pop();
       });
     }
   );

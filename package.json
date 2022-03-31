@@ -19,7 +19,6 @@
     "ts:compile": "tsc --build tsconfig.json"
   },
   "devDependencies": {
-    "@civ-clone/core-player": "^0.1.0",
     "@civ-clone/simple-world-generator": "github:civ-clone/simple-world-generator",
     "@types/chai": "^4.0.0",
     "@types/mocha": "^8.0.0",
@@ -62,9 +61,11 @@
     "@civ-clone/base-tile-improvement-pollution": "^0.1.0",
     "@civ-clone/base-tile-improvement-railroad": "^0.1.0",
     "@civ-clone/base-tile-improvement-road": "^0.1.0",
-    "@civ-clone/civ1-science": "github:civ-clone/civ1-science",
     "@civ-clone/civ1-government": "github:civ-clone/civ1-government",
+    "@civ-clone/civ1-science": "github:civ-clone/civ1-science",
     "@civ-clone/core-engine": "^0.1.0",
+    "@civ-clone/core-government": "^0.1.0",
+    "@civ-clone/core-player": "^0.1.0",
     "@civ-clone/core-rule": "^0.1.0",
     "@civ-clone/core-science": "^0.1.0",
     "@civ-clone/core-terrain": "^0.1.0",

@@ -24,7 +24,7 @@ import {
   Tundra,
 } from '../../Terrains';
 import { Food, Production, Trade } from '../../Yields';
-import { Irrigation, Mine, Railroad, Road } from '../../TileImprovements';
+import { Irrigation, Mine, Road } from '../../TileImprovements';
 import {
   Communism,
   Democracy,
@@ -45,7 +45,6 @@ import {
 } from '@civ-clone/core-tile-improvement/TileImprovementRegistry';
 import Criterion from '@civ-clone/core-rule/Criterion';
 import Effect from '@civ-clone/core-rule/Effect';
-import { High } from '@civ-clone/core-rule/Priorities';
 import Player from '@civ-clone/core-player/Player';
 import Terrain from '@civ-clone/core-terrain/Terrain';
 import TerrainFeature from '@civ-clone/core-terrain-feature/TerrainFeature';
@@ -83,13 +82,9 @@ export const getRules: (
     ([YieldType, TerrainType, value]: [typeof Yield, typeof Terrain, number]) =>
       new TileYield(
         new Criterion(
-          (tileYield: Yield): boolean => tileYield instanceof YieldType
+          (tile: Tile): boolean => tile.terrain() instanceof TerrainType
         ),
-        new Criterion(
-          (tileYield: Yield, tile: Tile): boolean =>
-            tile.terrain() instanceof TerrainType
-        ),
-        new Effect((tileYield: Yield): void => tileYield.add(value))
+        new Effect((): Yield => new YieldType(value, TerrainType.name))
       )
   ),
 
@@ -113,17 +108,14 @@ export const getRules: (
       number
     ]): TileYield =>
       new TileYield(
-        new Criterion(
-          (tileYield: Yield): boolean => tileYield instanceof YieldType
-        ),
-        new Criterion((tileYield: Yield, tile: Tile): boolean =>
+        new Criterion((tile: Tile): boolean =>
           terrainFeatureRegistry
             .getByTerrain(tile.terrain())
             .some(
               (feature: TerrainFeature): boolean => feature instanceof Feature
             )
         ),
-        new Effect((tileYield: Yield): void => tileYield.add(value))
+        new Effect((): Yield => new YieldType(value, Feature.name))
       )
   ),
 
@@ -146,52 +138,46 @@ export const getRules: (
       number
     ]): TileYield =>
       new TileYield(
-        new Criterion(
-          (tileYield: Yield, tile: Tile, player: Player): boolean => {
-            try {
-              return playerGovernmentRegistry
-                .getByPlayer(player)
-                .is(Communism, Democracy, Monarchy, Republic);
-            } catch (e) {
-              return false;
-            }
+        new Criterion((tile: Tile, player: Player | null): boolean => {
+          if (!player) {
+            return false;
           }
-        ),
-        new Criterion(
-          (tileYield: Yield): boolean => tileYield instanceof YieldType
-        ),
-        new Criterion((tileYield: Yield, tile: Tile): boolean =>
+
+          try {
+            return playerGovernmentRegistry
+              .getByPlayer(player)
+              .is(Communism, Democracy, Monarchy, Republic);
+          } catch (e) {
+            return false;
+          }
+        }),
+        new Criterion((tile: Tile): boolean =>
           terrainFeatureRegistry
             .getByTerrain(tile.terrain())
             .some(
               (feature: TerrainFeature): boolean => feature instanceof Feature
             )
         ),
-        new Effect((tileYield: Yield): void => tileYield.add(value))
+        new Effect((): Yield => new YieldType(value, Feature.name))
       )
   ),
 
   new TileYield(
-    new High(),
-    new Criterion((tileYield: Yield): boolean => tileYield instanceof Trade),
-    new Criterion(
-      (tileYield: Yield, tile: Tile): boolean => tile.terrain() instanceof Ocean
-    ),
-    new Effect((tileYield: Yield): void => tileYield.add(2))
+    new Criterion((tile: Tile): boolean => tile.terrain() instanceof Ocean),
+    new Effect((): Yield => new Trade(2, Ocean.name))
   ),
 
   new TileYield(
-    new High(),
-    new Criterion((tileYield: Yield): boolean => tileYield instanceof Trade),
-    new Criterion(
-      (tileYield: Yield, tile: Tile): boolean => tile.terrain() instanceof River
-    ),
-    new Effect((tileYield: Yield): void => tileYield.add(1))
+    new Criterion((tile: Tile): boolean => tile.terrain() instanceof River),
+    new Effect((): Yield => new Trade(1))
   ),
 
   new TileYield(
-    new High(),
-    new Criterion((tileYield: Yield, tile: Tile, player: Player): boolean => {
+    new Criterion((tile: Tile, player: Player | null): boolean => {
+      if (!player) {
+        return false;
+      }
+
       try {
         return playerGovernmentRegistry
           .getByPlayer(player)
@@ -200,12 +186,11 @@ export const getRules: (
         return false;
       }
     }),
-    new Criterion((tileYield: Yield): boolean => tileYield instanceof Trade),
     new Criterion(
-      (tileYield: Yield, tile: Tile): boolean =>
+      (tile: Tile): boolean =>
         tile.terrain() instanceof River || tile.terrain() instanceof Ocean
     ),
-    new Effect((tileYield: Yield): void => tileYield.add(1))
+    new Effect((): Yield => new Trade(1, Ocean.name))
   ),
 
   ...(
@@ -214,7 +199,7 @@ export const getRules: (
       [Desert, Production, Mine, 1],
       [Hills, Food, Irrigation, 1],
       [Hills, Production, Mine, 2],
-      [Mountains, Production, Mine, 2],
+      [Mountains, Production, Mine, 1],
       [Plains, Food, Irrigation, 1],
     ] as [typeof Terrain, typeof Yield, typeof TileImprovement, number][]
   ).map(
@@ -226,13 +211,9 @@ export const getRules: (
     ]): TileYield =>
       new TileYield(
         new Criterion(
-          (tileYield: Yield): boolean => tileYield instanceof YieldType
+          (tile: Tile): boolean => tile.terrain() instanceof ImprovedTerrain
         ),
-        new Criterion(
-          (tileYield: Yield, tile: Tile): boolean =>
-            tile.terrain() instanceof ImprovedTerrain
-        ),
-        new Criterion((tileYield: Yield, tile: Tile): boolean =>
+        new Criterion((tile: Tile): boolean =>
           tileImprovementRegistry
             .getByTile(tile)
             .some(
@@ -240,7 +221,7 @@ export const getRules: (
                 improvement instanceof Improvement
             )
         ),
-        new Effect((tileYield: Yield): void => tileYield.add(value))
+        new Effect((): Yield => new YieldType(value, Improvement.name))
       )
   ),
 
@@ -260,25 +241,23 @@ export const getRules: (
       number
     ]): TileYield =>
       new TileYield(
-        new Criterion(
-          (tileYield: Yield, tile: Tile, player: Player): boolean => {
-            try {
-              return playerGovernmentRegistry
-                .getByPlayer(player)
-                .is(Communism, Democracy, Monarchy, Republic);
-            } catch (e) {
-              return false;
-            }
+        new Criterion((tile: Tile, player: Player | null): boolean => {
+          if (!player) {
+            return false;
           }
-        ),
+
+          try {
+            return playerGovernmentRegistry
+              .getByPlayer(player)
+              .is(Communism, Democracy, Monarchy, Republic);
+          } catch (e) {
+            return false;
+          }
+        }),
         new Criterion(
-          (tileYield: Yield): boolean => tileYield instanceof YieldType
+          (tile: Tile): boolean => tile.terrain() instanceof ImprovedTerrain
         ),
-        new Criterion(
-          (tileYield: Yield, tile: Tile): boolean =>
-            tile.terrain() instanceof ImprovedTerrain
-        ),
-        new Criterion((tileYield: Yield, tile: Tile): boolean =>
+        new Criterion((tile: Tile): boolean =>
           tileImprovementRegistry
             .getByTile(tile)
             .some(
@@ -286,22 +265,17 @@ export const getRules: (
                 improvement instanceof Improvement
             )
         ),
-        new Effect((tileYield: Yield): void => tileYield.add(value))
+        new Effect((): Yield => new YieldType(value, Improvement.name))
       )
   ),
 
   ...[Desert, Grassland, Plains].map(
     (TerrainType: typeof Terrain): TileYield =>
       new TileYield(
-        new High(),
         new Criterion(
-          (tileYield: Yield): boolean => tileYield instanceof Trade
+          (tile: Tile): boolean => tile.terrain() instanceof TerrainType
         ),
-        new Criterion(
-          (tileYield: Yield, tile: Tile): boolean =>
-            tile.terrain() instanceof TerrainType
-        ),
-        new Criterion((tileYield: Yield, tile: Tile): boolean =>
+        new Criterion((tile: Tile): boolean =>
           tileImprovementRegistry
             .getByTile(tile)
             .some(
@@ -309,33 +283,30 @@ export const getRules: (
                 improvement instanceof Road
             )
         ),
-        new Effect((tileYield: Yield): void => tileYield.add(1))
+        new Effect((): Yield => new Trade(1, Road.name))
       )
   ),
 
   ...[Desert, Grassland, Plains].map(
     (TerrainType: typeof Terrain): TileYield =>
       new TileYield(
-        new High(),
-        new Criterion(
-          (tileYield: Yield, tile: Tile, player: Player): boolean => {
-            try {
-              return playerGovernmentRegistry
-                .getByPlayer(player)
-                .is(Democracy, Republic);
-            } catch (e) {
-              return false;
-            }
+        new Criterion((tile: Tile, player: Player | null): boolean => {
+          if (!player) {
+            return false;
           }
-        ),
+
+          try {
+            return playerGovernmentRegistry
+              .getByPlayer(player)
+              .is(Democracy, Republic);
+          } catch (e) {
+            return false;
+          }
+        }),
         new Criterion(
-          (tileYield: Yield): boolean => tileYield instanceof Trade
+          (tile: Tile): boolean => tile.terrain() instanceof TerrainType
         ),
-        new Criterion(
-          (tileYield: Yield, tile: Tile): boolean =>
-            tile.terrain() instanceof TerrainType
-        ),
-        new Criterion((tileYield: Yield, tile: Tile): boolean =>
+        new Criterion((tile: Tile): boolean =>
           tileImprovementRegistry
             .getByTile(tile)
             .some(
@@ -343,22 +314,8 @@ export const getRules: (
                 improvement instanceof Road
             )
         ),
-        new Effect((tileYield: Yield): void => tileYield.add(1))
+        new Effect((): Yield => new Trade(1, Road.name))
       )
-  ),
-
-  new TileYield(
-    new Criterion((tileYield: Yield, tile: Tile): boolean =>
-      tileImprovementRegistry
-        .getByTile(tile)
-        .some(
-          (improvement: TileImprovement): boolean =>
-            improvement instanceof Railroad
-        )
-    ),
-    new Effect((tileYield: Yield): void =>
-      tileYield.add(Math.floor(tileYield.value() * 0.5), Railroad.name)
-    )
   ),
 ];
 

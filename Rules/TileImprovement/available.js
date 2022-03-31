@@ -31,7 +31,24 @@ const getRules = (playerResearchRegistry = PlayerResearchRegistry_1.instance, ti
     ...[[TileImprovements_1.Road, Advances_1.BridgeBuilding, Terrains_1.River]].map(([Improvement, RequiredAdvance, AvailableTerrain]) => new Available_1.default(new Criterion_1.default((tile, AvailableTileImprovement) => AvailableTileImprovement === Improvement), new Criterion_1.default((tile, AvailableTileImprovement, player) => playerResearchRegistry
         .getByPlayer(player)
         .completed(RequiredAdvance)), new Criterion_1.default((tile) => tile.terrain() instanceof AvailableTerrain))),
-    ...[[TileImprovements_1.Railroad, Advances_1.Railroad, TileImprovements_1.Road]].map(([Improvement, RequiredAdvance, RequiredImprovement]) => new Available_1.default(new Criterion_1.default((tile, AvailableTileImprovement) => AvailableTileImprovement === Improvement), new Criterion_1.default((tile, AvailableTileImprovement, player) => playerResearchRegistry
+    ...[
+        [
+            TileImprovements_1.Railroad,
+            Advances_1.Railroad,
+            TileImprovements_1.Road,
+            Terrains_1.Arctic,
+            Terrains_1.Desert,
+            Terrains_1.Forest,
+            Terrains_1.Grassland,
+            Terrains_1.Hills,
+            Terrains_1.Jungle,
+            Terrains_1.Mountains,
+            Terrains_1.Plains,
+            Terrains_1.River,
+            Terrains_1.Swamp,
+            Terrains_1.Tundra,
+        ],
+    ].map(([Improvement, RequiredAdvance, RequiredImprovement, ...terrainTypes]) => new Available_1.default(new Criterion_1.default((tile) => terrainTypes.some((TerrainType) => tile.terrain() instanceof TerrainType)), new Criterion_1.default((tile, AvailableTileImprovement) => AvailableTileImprovement === Improvement), new Criterion_1.default((tile, AvailableTileImprovement, player) => playerResearchRegistry
         .getByPlayer(player)
         .completed(RequiredAdvance)), new Criterion_1.default((tile) => tileImprovementRegistry
         .getByTile(tile)

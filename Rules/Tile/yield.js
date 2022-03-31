@@ -11,7 +11,6 @@ const TerrainFeatureRegistry_1 = require("@civ-clone/core-terrain-feature/Terrai
 const TileImprovementRegistry_1 = require("@civ-clone/core-tile-improvement/TileImprovementRegistry");
 const Criterion_1 = require("@civ-clone/core-rule/Criterion");
 const Effect_1 = require("@civ-clone/core-rule/Effect");
-const Priorities_1 = require("@civ-clone/core-rule/Priorities");
 const Yield_1 = require("@civ-clone/core-world/Rules/Yield");
 const getRules = (tileImprovementRegistry = TileImprovementRegistry_1.instance, terrainFeatureRegistry = TerrainFeatureRegistry_1.instance, playerGovernmentRegistry = PlayerGovernmentRegistry_1.instance) => [
     ...[
@@ -28,7 +27,7 @@ const getRules = (tileImprovementRegistry = TileImprovementRegistry_1.instance, 
         [Yields_1.Production, Terrains_1.Forest, 2],
         [Yields_1.Production, Terrains_1.Mountains, 1],
         [Yields_1.Production, Terrains_1.Plains, 1],
-    ].map(([YieldType, TerrainType, value]) => new Yield_1.default(new Criterion_1.default((tileYield) => tileYield instanceof YieldType), new Criterion_1.default((tileYield, tile) => tile.terrain() instanceof TerrainType), new Effect_1.default((tileYield) => tileYield.add(value)))),
+    ].map(([YieldType, TerrainType, value]) => new Yield_1.default(new Criterion_1.default((tile) => tile.terrain() instanceof TerrainType), new Effect_1.default(() => new YieldType(value, TerrainType.name)))),
     ...[
         [Yields_1.Production, TerrainFeatures_1.Coal, 2],
         [Yields_1.Food, TerrainFeatures_1.Fish, 1],
@@ -40,9 +39,9 @@ const getRules = (tileImprovementRegistry = TileImprovementRegistry_1.instance, 
         [Yields_1.Production, TerrainFeatures_1.Oil, 3],
         [Yields_1.Food, TerrainFeatures_1.Seal, 2],
         [Yields_1.Production, TerrainFeatures_1.Shield, 1],
-    ].map(([YieldType, Feature, value]) => new Yield_1.default(new Criterion_1.default((tileYield) => tileYield instanceof YieldType), new Criterion_1.default((tileYield, tile) => terrainFeatureRegistry
+    ].map(([YieldType, Feature, value]) => new Yield_1.default(new Criterion_1.default((tile) => terrainFeatureRegistry
         .getByTerrain(tile.terrain())
-        .some((feature) => feature instanceof Feature)), new Effect_1.default((tileYield) => tileYield.add(value)))),
+        .some((feature) => feature instanceof Feature)), new Effect_1.default(() => new YieldType(value, Feature.name)))),
     ...[
         [Yields_1.Production, TerrainFeatures_1.Coal, 1],
         [Yields_1.Food, TerrainFeatures_1.Fish, 1],
@@ -53,7 +52,10 @@ const getRules = (tileImprovementRegistry = TileImprovementRegistry_1.instance, 
         [Yields_1.Food, TerrainFeatures_1.Oasis, 1],
         [Yields_1.Production, TerrainFeatures_1.Oil, 1],
         [Yields_1.Food, TerrainFeatures_1.Seal, 1],
-    ].map(([YieldType, Feature, value]) => new Yield_1.default(new Criterion_1.default((tileYield, tile, player) => {
+    ].map(([YieldType, Feature, value]) => new Yield_1.default(new Criterion_1.default((tile, player) => {
+        if (!player) {
+            return false;
+        }
         try {
             return playerGovernmentRegistry
                 .getByPlayer(player)
@@ -62,12 +64,15 @@ const getRules = (tileImprovementRegistry = TileImprovementRegistry_1.instance, 
         catch (e) {
             return false;
         }
-    }), new Criterion_1.default((tileYield) => tileYield instanceof YieldType), new Criterion_1.default((tileYield, tile) => terrainFeatureRegistry
+    }), new Criterion_1.default((tile) => terrainFeatureRegistry
         .getByTerrain(tile.terrain())
-        .some((feature) => feature instanceof Feature)), new Effect_1.default((tileYield) => tileYield.add(value)))),
-    new Yield_1.default(new Priorities_1.High(), new Criterion_1.default((tileYield) => tileYield instanceof Yields_1.Trade), new Criterion_1.default((tileYield, tile) => tile.terrain() instanceof Terrains_1.Ocean), new Effect_1.default((tileYield) => tileYield.add(2))),
-    new Yield_1.default(new Priorities_1.High(), new Criterion_1.default((tileYield) => tileYield instanceof Yields_1.Trade), new Criterion_1.default((tileYield, tile) => tile.terrain() instanceof Terrains_1.River), new Effect_1.default((tileYield) => tileYield.add(1))),
-    new Yield_1.default(new Priorities_1.High(), new Criterion_1.default((tileYield, tile, player) => {
+        .some((feature) => feature instanceof Feature)), new Effect_1.default(() => new YieldType(value, Feature.name)))),
+    new Yield_1.default(new Criterion_1.default((tile) => tile.terrain() instanceof Terrains_1.Ocean), new Effect_1.default(() => new Yields_1.Trade(2, Terrains_1.Ocean.name))),
+    new Yield_1.default(new Criterion_1.default((tile) => tile.terrain() instanceof Terrains_1.River), new Effect_1.default(() => new Yields_1.Trade(1))),
+    new Yield_1.default(new Criterion_1.default((tile, player) => {
+        if (!player) {
+            return false;
+        }
         try {
             return playerGovernmentRegistry
                 .getByPlayer(player)
@@ -76,24 +81,27 @@ const getRules = (tileImprovementRegistry = TileImprovementRegistry_1.instance, 
         catch (e) {
             return false;
         }
-    }), new Criterion_1.default((tileYield) => tileYield instanceof Yields_1.Trade), new Criterion_1.default((tileYield, tile) => tile.terrain() instanceof Terrains_1.River || tile.terrain() instanceof Terrains_1.Ocean), new Effect_1.default((tileYield) => tileYield.add(1))),
+    }), new Criterion_1.default((tile) => tile.terrain() instanceof Terrains_1.River || tile.terrain() instanceof Terrains_1.Ocean), new Effect_1.default(() => new Yields_1.Trade(1, Terrains_1.Ocean.name))),
     ...[
         [Terrains_1.Desert, Yields_1.Food, TileImprovements_1.Irrigation, 1],
         [Terrains_1.Desert, Yields_1.Production, TileImprovements_1.Mine, 1],
         [Terrains_1.Hills, Yields_1.Food, TileImprovements_1.Irrigation, 1],
         [Terrains_1.Hills, Yields_1.Production, TileImprovements_1.Mine, 2],
-        [Terrains_1.Mountains, Yields_1.Production, TileImprovements_1.Mine, 2],
+        [Terrains_1.Mountains, Yields_1.Production, TileImprovements_1.Mine, 1],
         [Terrains_1.Plains, Yields_1.Food, TileImprovements_1.Irrigation, 1],
-    ].map(([ImprovedTerrain, YieldType, Improvement, value]) => new Yield_1.default(new Criterion_1.default((tileYield) => tileYield instanceof YieldType), new Criterion_1.default((tileYield, tile) => tile.terrain() instanceof ImprovedTerrain), new Criterion_1.default((tileYield, tile) => tileImprovementRegistry
+    ].map(([ImprovedTerrain, YieldType, Improvement, value]) => new Yield_1.default(new Criterion_1.default((tile) => tile.terrain() instanceof ImprovedTerrain), new Criterion_1.default((tile) => tileImprovementRegistry
         .getByTile(tile)
-        .some((improvement) => improvement instanceof Improvement)), new Effect_1.default((tileYield) => tileYield.add(value)))),
+        .some((improvement) => improvement instanceof Improvement)), new Effect_1.default(() => new YieldType(value, Improvement.name)))),
     ...[
         [Terrains_1.Desert, Yields_1.Production, TileImprovements_1.Mine, 1],
         [Terrains_1.Grassland, Yields_1.Food, TileImprovements_1.Irrigation, 1],
         [Terrains_1.Hills, Yields_1.Production, TileImprovements_1.Mine, 1],
         [Terrains_1.Mountains, Yields_1.Production, TileImprovements_1.Mine, 1],
         [Terrains_1.River, Yields_1.Food, TileImprovements_1.Irrigation, 1],
-    ].map(([ImprovedTerrain, YieldType, Improvement, value]) => new Yield_1.default(new Criterion_1.default((tileYield, tile, player) => {
+    ].map(([ImprovedTerrain, YieldType, Improvement, value]) => new Yield_1.default(new Criterion_1.default((tile, player) => {
+        if (!player) {
+            return false;
+        }
         try {
             return playerGovernmentRegistry
                 .getByPlayer(player)
@@ -102,13 +110,16 @@ const getRules = (tileImprovementRegistry = TileImprovementRegistry_1.instance, 
         catch (e) {
             return false;
         }
-    }), new Criterion_1.default((tileYield) => tileYield instanceof YieldType), new Criterion_1.default((tileYield, tile) => tile.terrain() instanceof ImprovedTerrain), new Criterion_1.default((tileYield, tile) => tileImprovementRegistry
+    }), new Criterion_1.default((tile) => tile.terrain() instanceof ImprovedTerrain), new Criterion_1.default((tile) => tileImprovementRegistry
         .getByTile(tile)
-        .some((improvement) => improvement instanceof Improvement)), new Effect_1.default((tileYield) => tileYield.add(value)))),
-    ...[Terrains_1.Desert, Terrains_1.Grassland, Terrains_1.Plains].map((TerrainType) => new Yield_1.default(new Priorities_1.High(), new Criterion_1.default((tileYield) => tileYield instanceof Yields_1.Trade), new Criterion_1.default((tileYield, tile) => tile.terrain() instanceof TerrainType), new Criterion_1.default((tileYield, tile) => tileImprovementRegistry
+        .some((improvement) => improvement instanceof Improvement)), new Effect_1.default(() => new YieldType(value, Improvement.name)))),
+    ...[Terrains_1.Desert, Terrains_1.Grassland, Terrains_1.Plains].map((TerrainType) => new Yield_1.default(new Criterion_1.default((tile) => tile.terrain() instanceof TerrainType), new Criterion_1.default((tile) => tileImprovementRegistry
         .getByTile(tile)
-        .some((improvement) => improvement instanceof TileImprovements_1.Road)), new Effect_1.default((tileYield) => tileYield.add(1)))),
-    ...[Terrains_1.Desert, Terrains_1.Grassland, Terrains_1.Plains].map((TerrainType) => new Yield_1.default(new Priorities_1.High(), new Criterion_1.default((tileYield, tile, player) => {
+        .some((improvement) => improvement instanceof TileImprovements_1.Road)), new Effect_1.default(() => new Yields_1.Trade(1, TileImprovements_1.Road.name)))),
+    ...[Terrains_1.Desert, Terrains_1.Grassland, Terrains_1.Plains].map((TerrainType) => new Yield_1.default(new Criterion_1.default((tile, player) => {
+        if (!player) {
+            return false;
+        }
         try {
             return playerGovernmentRegistry
                 .getByPlayer(player)
@@ -117,12 +128,9 @@ const getRules = (tileImprovementRegistry = TileImprovementRegistry_1.instance, 
         catch (e) {
             return false;
         }
-    }), new Criterion_1.default((tileYield) => tileYield instanceof Yields_1.Trade), new Criterion_1.default((tileYield, tile) => tile.terrain() instanceof TerrainType), new Criterion_1.default((tileYield, tile) => tileImprovementRegistry
+    }), new Criterion_1.default((tile) => tile.terrain() instanceof TerrainType), new Criterion_1.default((tile) => tileImprovementRegistry
         .getByTile(tile)
-        .some((improvement) => improvement instanceof TileImprovements_1.Road)), new Effect_1.default((tileYield) => tileYield.add(1)))),
-    new Yield_1.default(new Criterion_1.default((tileYield, tile) => tileImprovementRegistry
-        .getByTile(tile)
-        .some((improvement) => improvement instanceof TileImprovements_1.Railroad)), new Effect_1.default((tileYield) => tileYield.add(Math.floor(tileYield.value() * 0.5), TileImprovements_1.Railroad.name))),
+        .some((improvement) => improvement instanceof TileImprovements_1.Road)), new Effect_1.default(() => new Yields_1.Trade(1, TileImprovements_1.Road.name)))),
 ];
 exports.getRules = getRules;
 exports.default = exports.getRules;
