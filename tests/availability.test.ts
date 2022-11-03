@@ -1,14 +1,12 @@
 import {
-  Available,
-  IAvailableRegistry,
-} from '@civ-clone/core-tile-improvement/Rules/Available';
+  BridgeBuilding,
+  Railroad as RailroadAdvance,
+} from '@civ-clone/civ1-science/Advances';
 import { Irrigation, Mine, Railroad, Road } from '../TileImprovements';
-import Advance from '@civ-clone/core-science/Advance';
-import { BridgeBuilding } from '@civ-clone/civ1-science/Advances';
+import Available from '@civ-clone/core-tile-improvement/Rules/Available';
 import Player from '@civ-clone/core-player/Player';
 import PlayerResearch from '@civ-clone/core-science/PlayerResearch';
 import PlayerResearchRegistry from '@civ-clone/core-science/PlayerResearchRegistry';
-import { Railroad as RailroadAdvance } from '@civ-clone/civ1-science/Advances';
 import RuleRegistry from '@civ-clone/core-rule/RuleRegistry';
 import TerrainFeatureRegistry from '@civ-clone/core-terrain-feature/TerrainFeatureRegistry';
 import Tile from '@civ-clone/core-world/Tile';
@@ -35,7 +33,7 @@ describe('tile-improvement:availability', async (): Promise<void> => {
     ...available(playerResearchRegistry, tileImprovementRegistry)
   );
 
-  const availabilityRules = (ruleRegistry as IAvailableRegistry).get(Available);
+  const availabilityRules = ruleRegistry.get(Available);
 
   (
     [

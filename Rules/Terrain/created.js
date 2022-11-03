@@ -8,7 +8,7 @@ const Effect_1 = require("@civ-clone/core-rule/Effect");
 const Feature_1 = require("@civ-clone/core-terrain-feature/Rules/Feature");
 const getRules = (ruleRegistry = RuleRegistry_1.instance, availableTerrainFeatureRegistry = AvailableTerrainFeatureRegistry_1.instance) => [
     new Created_1.default(new Effect_1.default((terrain) => {
-        const rules = ruleRegistry.get(Feature_1.Feature);
+        const rules = ruleRegistry.get(Feature_1.default);
         availableTerrainFeatureRegistry
             .entries()
             .forEach((TerrainFeatureType) => rules

@@ -97,10 +97,11 @@ export const generateFixedWorld = (
           }
         ),
         terrainFeatureRegistry
-      )
+      ),
+      ruleRegistry
     );
 
-  return world.build(ruleRegistry);
+  return world.build();
 };
 
 describe('tile:yield', async (): Promise<void> => {
