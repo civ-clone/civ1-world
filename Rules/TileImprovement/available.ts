@@ -39,6 +39,7 @@ export const getRules: (
   playerResearchRegistry: PlayerResearchRegistry = playerResearchRegistryInstance,
   tileImprovementRegistry: TileImprovementRegistry = tileImprovementRegistryInstance
 ): Available[] => [
+  // Improvement requires a specific terrain type
   ...(
     [
       [Irrigation, Desert, Grassland, Hills, Plains, River],
@@ -58,7 +59,7 @@ export const getRules: (
       ],
     ] as [typeof TileImprovement, ...typeof Terrain[]][]
   ).map(
-    ([Improvement, ...terrains]: [
+    ([Improvement, ...AvailableTerrains]: [
       typeof TileImprovement,
       ...typeof Terrain[]
     ]): Available =>
@@ -68,6 +69,49 @@ export const getRules: (
             tile: Tile,
             AvailableTileImprovement: typeof TileImprovement
           ): boolean => AvailableTileImprovement === Improvement
+        ),
+        new Criterion((tile: Tile): boolean =>
+          AvailableTerrains.some((Terrain) => tile.terrain() instanceof Terrain)
+        ),
+        new Criterion(
+          (
+            tile: Tile,
+            AvailableTileImprovement: typeof TileImprovement
+          ): boolean =>
+            !tileImprovementRegistry
+              .getByTile(tile)
+              .some(
+                (improvement: TileImprovement): boolean =>
+                  improvement instanceof AvailableTileImprovement
+              )
+        )
+      )
+  ),
+
+  // Improvement requires a specific terrain type and an advance
+  ...(
+    [[Road, BridgeBuilding, River]] as [
+      typeof TileImprovement,
+      typeof Advance,
+      ...typeof Terrain[]
+    ][]
+  ).map(
+    ([Improvement, RequiredAdvance, ...AvailableTerrains]: [
+      typeof TileImprovement,
+      typeof Advance,
+      ...typeof Terrain[]
+    ]): Available =>
+      new Available(
+        new Criterion(
+          (
+            tile: Tile,
+            AvailableTileImprovement: typeof TileImprovement
+          ): boolean => AvailableTileImprovement === Improvement
+        ),
+        new Criterion((tile: Tile): boolean =>
+          AvailableTerrains.some(
+            (TerrainType) => tile.terrain() instanceof TerrainType
+          )
         ),
         new Criterion(
           (
@@ -81,31 +125,6 @@ export const getRules: (
                   improvement instanceof AvailableTileImprovement
               )
         ),
-        new Criterion((tile: Tile): boolean =>
-          terrains.some((Terrain) => tile.terrain() instanceof Terrain)
-        )
-      )
-  ),
-
-  ...(
-    [[Road, BridgeBuilding, River]] as [
-      typeof TileImprovement,
-      typeof Advance,
-      typeof Terrain
-    ][]
-  ).map(
-    ([Improvement, RequiredAdvance, AvailableTerrain]: [
-      typeof TileImprovement,
-      typeof Advance,
-      typeof Terrain
-    ]): Available =>
-      new Available(
-        new Criterion(
-          (
-            tile: Tile,
-            AvailableTileImprovement: typeof TileImprovement
-          ): boolean => AvailableTileImprovement === Improvement
-        ),
         new Criterion(
           (
             tile: Tile,
@@ -115,13 +134,11 @@ export const getRules: (
             playerResearchRegistry
               .getByPlayer(player)
               .completed(RequiredAdvance)
-        ),
-        new Criterion(
-          (tile: Tile): boolean => tile.terrain() instanceof AvailableTerrain
         )
       )
   ),
 
+  // Improvement requires a specific terrain type, an existing improvement and an advance
   ...(
     [
       [
@@ -147,15 +164,26 @@ export const getRules: (
       ...typeof Terrain[]
     ][]
   ).map(
-    ([Improvement, RequiredAdvance, RequiredImprovement, ...terrainTypes]: [
+    ([
+      Improvement,
+      RequiredAdvance,
+      RequiredImprovement,
+      ...AvailableTerrains
+    ]: [
       typeof TileImprovement,
       typeof Advance,
       typeof TileImprovement,
       ...typeof Terrain[]
     ]): Available =>
       new Available(
+        new Criterion(
+          (
+            tile: Tile,
+            AvailableTileImprovement: typeof TileImprovement
+          ): boolean => AvailableTileImprovement === Improvement
+        ),
         new Criterion((tile: Tile): boolean =>
-          terrainTypes.some(
+          AvailableTerrains.some(
             (TerrainType) => tile.terrain() instanceof TerrainType
           )
         ),
@@ -163,7 +191,21 @@ export const getRules: (
           (
             tile: Tile,
             AvailableTileImprovement: typeof TileImprovement
-          ): boolean => AvailableTileImprovement === Improvement
+          ): boolean =>
+            !tileImprovementRegistry
+              .getByTile(tile)
+              .some(
+                (improvement: TileImprovement): boolean =>
+                  improvement instanceof AvailableTileImprovement
+              )
+        ),
+        new Criterion((tile: Tile): boolean =>
+          tileImprovementRegistry
+            .getByTile(tile)
+            .some(
+              (tileImprovement) =>
+                tileImprovement instanceof RequiredImprovement
+            )
         ),
         new Criterion(
           (
@@ -174,14 +216,6 @@ export const getRules: (
             playerResearchRegistry
               .getByPlayer(player)
               .completed(RequiredAdvance)
-        ),
-        new Criterion((tile: Tile): boolean =>
-          tileImprovementRegistry
-            .getByTile(tile)
-            .some(
-              (tileImprovement) =>
-                tileImprovement instanceof RequiredImprovement
-            )
         )
       )
   ),
