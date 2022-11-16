@@ -61,6 +61,8 @@
     "@civ-clone/base-tile-improvement-pollution": "^0.1.0",
     "@civ-clone/base-tile-improvement-railroad": "^0.1.0",
     "@civ-clone/base-tile-improvement-road": "^0.1.0",
+    "@civ-clone/civ1-civilization": "github:civ-clone/civ1-civilization",
+    "@civ-clone/civ1-earth-generator": "github:civ-clone/civ1-earth-generator",
     "@civ-clone/civ1-government": "github:civ-clone/civ1-government",
     "@civ-clone/civ1-science": "github:civ-clone/civ1-science",
     "@civ-clone/core-engine": "^0.1.0",

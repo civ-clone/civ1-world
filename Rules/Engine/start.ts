@@ -11,25 +11,19 @@ import {
   instance as engineInstance,
 } from '@civ-clone/core-engine/Engine';
 import Effect from '@civ-clone/core-rule/Effect';
-import Generator from '@civ-clone/core-world-generator/Generator';
+import PickGenerator from '@civ-clone/core-world-generator/Rules/PickGenerator';
 import Start from '@civ-clone/core-engine/Rules/Start';
 import World from '@civ-clone/core-world/World';
 
 export const getRules = (
   ruleRegistry: RuleRegistry = ruleRegistryInstances,
   generatorRegistry: GeneratorRegistry = generatorRegistryInstance,
-  engine: Engine = engineInstance,
-  randomNumberGenerator: () => number = () => Math.random()
+  engine: Engine = engineInstance
 ): Start[] => [
   new Start(
     new Effect((): void => {
-      const availableGenerators: typeof Generator[] =
-          generatorRegistry.entries(),
-        RandomGenerator: typeof Generator =
-          availableGenerators[
-            Math.floor(availableGenerators.length * randomNumberGenerator())
-          ],
-        generator: Generator = new RandomGenerator(
+      const [Generator] = ruleRegistry.process(PickGenerator),
+        generator = new Generator(
           parseInt(engine.option('height', 100), 10),
           parseInt(engine.option('width', 160), 10),
           {

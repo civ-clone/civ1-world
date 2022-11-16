@@ -5,7 +5,6 @@ import Start from '@civ-clone/core-engine/Rules/Start';
 export declare const getRules: (
   ruleRegistry?: RuleRegistry,
   generatorRegistry?: GeneratorRegistry,
-  engine?: Engine,
-  randomNumberGenerator?: () => number
+  engine?: Engine
 ) => Start[];
 export default getRules;

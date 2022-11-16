@@ -11,5 +11,6 @@ const pillaged_1 = require("./Rules/TileImprovement/pillaged");
 const start_1 = require("./Rules/Engine/start");
 const yield_1 = require("./Rules/Tile/yield");
 const yield_modifier_1 = require("./Rules/Tile/yield-modifier");
-RuleRegistry_1.instance.register(...(0, available_1.default)(), ...(0, built_1.default)(), ...(0, created_1.default)(), ...(0, distribution_1.default)(), ...(0, distribution_groups_1.default)(), ...(0, feature_1.default)(), ...(0, pillaged_1.default)(), ...(0, start_1.default)(), ...(0, yield_1.default)(), ...(0, yield_modifier_1.default)());
+const pick_generator_1 = require("./Rules/WorldGenerator/pick-generator");
+RuleRegistry_1.instance.register(...(0, available_1.default)(), ...(0, built_1.default)(), ...(0, created_1.default)(), ...(0, distribution_1.default)(), ...(0, distribution_groups_1.default)(), ...(0, feature_1.default)(), ...(0, pillaged_1.default)(), ...(0, start_1.default)(), ...(0, yield_1.default)(), ...(0, yield_modifier_1.default)(), ...(0, pick_generator_1.default)());
 //# sourceMappingURL=registerRules.js.map
