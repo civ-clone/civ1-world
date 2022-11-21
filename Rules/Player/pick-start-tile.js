@@ -1,13 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getRules = void 0;
+const EarthStartTileRegistry_1 = require("@civ-clone/civ1-earth-generator/EarthStartTileRegistry");
 const Engine_1 = require("@civ-clone/core-engine/Engine");
 const Yields_1 = require("../../Yields");
 const Terrains_1 = require("../../Terrains");
-const Criterion_1 = require("@civ-clone/core-rule/Criterion");
 const Effect_1 = require("@civ-clone/core-rule/Effect");
 const PickStartTile_1 = require("@civ-clone/core-world-generator/Rules/PickStartTile");
-const Earth_1 = require("@civ-clone/civ1-earth-generator/Earth");
 const startTileCache = new Map(), tileScoreCache = new Map(), areaScoreCache = new Map(), tileScore = (tile, player = null) => {
     if (!tileScoreCache.has(tile)) {
         tileScoreCache.set(tile, tile.score(player, [
@@ -42,10 +41,21 @@ const startTileCache = new Map(), tileScoreCache = new Map(), areaScoreCache = n
     }
     return startTileCache.get(world);
 };
-const getRules = (engine = Engine_1.instance, randomNumberGenerator = () => Math.random()) => [
-    new PickStartTile_1.default(new Criterion_1.default(() => engine.option('earth', false)), new Effect_1.default((world, player) => (0, Earth_1.startSquare)(world, player.civilization()))),
-    new PickStartTile_1.default(new Criterion_1.default(() => !engine.option('earth', false)), new Effect_1.default((world, player, usedStartSquares) => {
-        const startingSquares = pickStartTiles(world);
+const getRules = (earthStartTileRegistry = EarthStartTileRegistry_1.instance, engine = Engine_1.instance, randomNumberGenerator = () => Math.random()) => [
+    new PickStartTile_1.default(new Effect_1.default((world, player, usedStartSquares) => {
+        if (engine.option('earth', false)) {
+            try {
+                return earthStartTileRegistry.getStartTileByCivilizationAndWorld(player.civilization().sourceClass(), world);
+            }
+            catch (e) {
+                // TODO: The Civilization isn't registered, this might pose problems if the random selection are fixed start
+                //  tiles, ideally we'd defer this selection until other `Player`s have picked.
+                usedStartSquares.push(...earthStartTileRegistry
+                    .entries()
+                    .map((startTile) => startTile.startTileForMap(world)));
+            }
+        }
+        const startingSquares = pickStartTiles(world, engine);
         startingSquares.forEach((tile) => {
             if (usedStartSquares.some((startSquare) => startSquare.distanceFrom(tile) <= 4)) {
                 startingSquares.splice(startingSquares.indexOf(tile), 1);

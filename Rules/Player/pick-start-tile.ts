@@ -1,16 +1,18 @@
 import {
+  EarthStartTileRegistry,
+  instance as earthStartTileRegistryInstance,
+} from '@civ-clone/civ1-earth-generator/EarthStartTileRegistry';
+import {
   Engine,
   instance as engineInstance,
 } from '@civ-clone/core-engine/Engine';
 import { Food, Trade, Production } from '../../Yields';
 import { Grassland, Plains, River } from '../../Terrains';
-import Criterion from '@civ-clone/core-rule/Criterion';
 import Effect from '@civ-clone/core-rule/Effect';
 import PickStartTile from '@civ-clone/core-world-generator/Rules/PickStartTile';
 import Player from '@civ-clone/core-player/Player';
 import Tile from '@civ-clone/core-world/Tile';
 import World from '@civ-clone/core-world/World';
-import { startSquare } from '@civ-clone/civ1-earth-generator/Earth';
 
 const startTileCache = new Map<World, Tile[]>(),
   tileScoreCache: Map<Tile, number> = new Map(),
@@ -73,20 +75,30 @@ const startTileCache = new Map<World, Tile[]>(),
   };
 
 export const getRules = (
+  earthStartTileRegistry: EarthStartTileRegistry = earthStartTileRegistryInstance,
   engine: Engine = engineInstance,
   randomNumberGenerator: () => number = () => Math.random()
 ): PickStartTile[] => [
   new PickStartTile(
-    new Criterion(() => engine.option('earth', false)),
-    new Effect((world: World, player: Player) =>
-      startSquare(world, player.civilization())
-    )
-  ),
-
-  new PickStartTile(
-    new Criterion(() => !engine.option('earth', false)),
     new Effect((world: World, player: Player, usedStartSquares: Tile[]) => {
-      const startingSquares = pickStartTiles(world);
+      if (engine.option('earth', false)) {
+        try {
+          return earthStartTileRegistry.getStartTileByCivilizationAndWorld(
+            player.civilization().sourceClass(),
+            world
+          );
+        } catch (e) {
+          // TODO: The Civilization isn't registered, this might pose problems if the random selection are fixed start
+          //  tiles, ideally we'd defer this selection until other `Player`s have picked.
+          usedStartSquares.push(
+            ...earthStartTileRegistry
+              .entries()
+              .map((startTile) => startTile.startTileForMap(world))
+          );
+        }
+      }
+
+      const startingSquares = pickStartTiles(world, engine);
 
       startingSquares.forEach((tile: Tile) => {
         if (
