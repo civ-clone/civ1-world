@@ -30,7 +30,7 @@ import {
   Democracy,
   Monarchy,
   Republic,
-} from '@civ-clone/civ1-government/Governments';
+} from '@civ-clone/library-government/Governments';
 import {
   PlayerGovernmentRegistry,
   instance as playerGovernmentRegistryInstance,

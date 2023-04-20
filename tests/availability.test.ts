@@ -1,7 +1,7 @@
 import {
   BridgeBuilding,
   Railroad as RailroadAdvance,
-} from '@civ-clone/civ1-science/Advances';
+} from '@civ-clone/library-science/Advances';
 import { Irrigation, Mine, Railroad, Road } from '../TileImprovements';
 import Available from '@civ-clone/core-tile-improvement/Rules/Available';
 import Player from '@civ-clone/core-player/Player';

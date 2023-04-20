@@ -51,7 +51,7 @@ export const generateFixedWorld = (
   terrainFeatureRegistry: TerrainFeatureRegistry = terrainFeatureRegistryInstance,
   ruleRegistry: RuleRegistry = ruleRegistryInstance
 ): Promise<World> => {
-  const terrains: [typeof Terrain, ...typeof TerrainFeature[]][] = [
+  const terrains: [typeof Terrain, ...(typeof TerrainFeature)[]][] = [
       [Arctic],
       [Arctic, Seal],
       [Desert],
@@ -84,7 +84,7 @@ export const generateFixedWorld = (
         terrains.map(
           ([TerrainType, ...features]: [
             typeof Terrain,
-            ...typeof TerrainFeature[]
+            ...(typeof TerrainFeature)[]
           ]): [Terrain, ...TerrainFeature[]] => {
             const terrain = new TerrainType();
 
@@ -351,10 +351,10 @@ describe('tile:yield', async (): Promise<void> => {
         [world.get(12, 0), Production, 3], // Mountains
         [world.get(13, 0), Production, 3], // Mountains - Gold
       ],
-    ] as [typeof TileImprovement[], ...[Tile, typeof Yield, number][]][]
+    ] as [(typeof TileImprovement)[], ...[Tile, typeof Yield, number][]][]
   ).forEach(
     ([improvements, ...values]: [
-      typeof TileImprovement[],
+      (typeof TileImprovement)[],
       ...[Tile, typeof Yield, number][]
     ]): void => {
       values.forEach(

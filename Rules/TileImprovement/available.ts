@@ -19,7 +19,7 @@ import {
 import {
   BridgeBuilding,
   Railroad as RailroadAdvance,
-} from '@civ-clone/civ1-science/Advances';
+} from '@civ-clone/library-science/Advances';
 import {
   TileImprovementRegistry,
   instance as tileImprovementRegistryInstance,
@@ -57,11 +57,11 @@ export const getRules: (
         Swamp,
         Tundra,
       ],
-    ] as [typeof TileImprovement, ...typeof Terrain[]][]
+    ] as [typeof TileImprovement, ...(typeof Terrain)[]][]
   ).map(
     ([Improvement, ...AvailableTerrains]: [
       typeof TileImprovement,
-      ...typeof Terrain[]
+      ...(typeof Terrain)[]
     ]): Available =>
       new Available(
         new Criterion(
@@ -93,13 +93,13 @@ export const getRules: (
     [[Road, BridgeBuilding, River]] as [
       typeof TileImprovement,
       typeof Advance,
-      ...typeof Terrain[]
+      ...(typeof Terrain)[]
     ][]
   ).map(
     ([Improvement, RequiredAdvance, ...AvailableTerrains]: [
       typeof TileImprovement,
       typeof Advance,
-      ...typeof Terrain[]
+      ...(typeof Terrain)[]
     ]): Available =>
       new Available(
         new Criterion(
@@ -161,7 +161,7 @@ export const getRules: (
       typeof TileImprovement,
       typeof Advance,
       typeof TileImprovement,
-      ...typeof Terrain[]
+      ...(typeof Terrain)[]
     ][]
   ).map(
     ([
@@ -173,7 +173,7 @@ export const getRules: (
       typeof TileImprovement,
       typeof Advance,
       typeof TileImprovement,
-      ...typeof Terrain[]
+      ...(typeof Terrain)[]
     ]): Available =>
       new Available(
         new Criterion(

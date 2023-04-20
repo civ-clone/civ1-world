@@ -55,12 +55,12 @@ export const getRules: (
         [Oil, baseChance, Swamp],
         [Seal, baseChance, Arctic],
         [Shield, 0.5, Grassland, River],
-      ] as [typeof TerrainFeature, number, ...typeof Terrain[]][]
+      ] as [typeof TerrainFeature, number, ...(typeof Terrain)[]][]
     ).flatMap(
       ([FeatureType, chance, ...terrains]: [
         typeof TerrainFeature,
         number,
-        ...typeof Terrain[]
+        ...(typeof Terrain)[]
       ]): Feature[] =>
         terrains.flatMap((TerrainType: typeof Terrain) =>
           feature(TerrainType, FeatureType, chance, terrainFeatureRegistry)
