@@ -13,6 +13,7 @@ import PickStartTile from '@civ-clone/core-world-generator/Rules/PickStartTile';
 import Player from '@civ-clone/core-player/Player';
 import Tile from '@civ-clone/core-world/Tile';
 import World from '@civ-clone/core-world/World';
+import { instance as rngInstance } from '@civ-clone/core-random';
 
 const startTileCache = new Map<World, Tile[]>(),
   tileScoreCache: Map<Tile, number> = new Map(),
@@ -77,7 +78,7 @@ const startTileCache = new Map<World, Tile[]>(),
 export const getRules = (
   earthStartTileRegistry: EarthStartTileRegistry = earthStartTileRegistryInstance,
   engine: Engine = engineInstance,
-  randomNumberGenerator: () => number = () => Math.random()
+  randomNumberGenerator: () => number = rngInstance
 ): PickStartTile[] => [
   new PickStartTile(
     new Effect((world: World, player: Player, usedStartSquares: Tile[]) => {

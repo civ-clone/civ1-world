@@ -7,6 +7,7 @@ const Yields_1 = require("../../Yields");
 const Terrains_1 = require("../../Terrains");
 const Effect_1 = require("@civ-clone/core-rule/Effect");
 const PickStartTile_1 = require("@civ-clone/core-world-generator/Rules/PickStartTile");
+const core_random_1 = require("@civ-clone/core-random");
 const startTileCache = new Map(), tileScoreCache = new Map(), areaScoreCache = new Map(), tileScore = (tile, player = null) => {
     if (!tileScoreCache.has(tile)) {
         tileScoreCache.set(tile, tile.score(player, [
@@ -41,7 +42,7 @@ const startTileCache = new Map(), tileScoreCache = new Map(), areaScoreCache = n
     }
     return startTileCache.get(world);
 };
-const getRules = (earthStartTileRegistry = EarthStartTileRegistry_1.instance, engine = Engine_1.instance, randomNumberGenerator = () => Math.random()) => [
+const getRules = (earthStartTileRegistry = EarthStartTileRegistry_1.instance, engine = Engine_1.instance, randomNumberGenerator = core_random_1.instance) => [
     new PickStartTile_1.default(new Effect_1.default((world, player, usedStartSquares) => {
         if (engine.option('earth', false)) {
             try {
