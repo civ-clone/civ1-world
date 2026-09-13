@@ -31,6 +31,7 @@
   },
   "dependencies": {
     "@civ-clone/civ1-earth-generator": "github:civ-clone/civ1-earth-generator",
+    "@civ-clone/civ1-game": "github:civ-clone/civ1-game",
     "@civ-clone/core-engine": "^0.1.0",
     "@civ-clone/core-government": "^0.1.0",
     "@civ-clone/core-player": "^0.1.0",
