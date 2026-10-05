@@ -15,7 +15,15 @@ import Tile from '@civ-clone/core-world/Tile';
 import World from '@civ-clone/core-world/World';
 import { instance as rngInstance } from '@civ-clone/core-random';
 
-const startTileCache = new Map<World, Tile[]>(),
+// v474.05 only starts a civilization on a continent with at least this many
+// Grassland, Plains or River tiles.
+export const minimumBuildableTiles = 32;
+
+const startTerrains = [Grassland, Plains, River],
+  isStartTerrain = (tile: Tile): boolean =>
+    startTerrains.some((TerrainType) => tile.terrain() instanceof TerrainType),
+  startTileCache = new Map<World, Tile[]>(),
+  buildableTilesCache = new Map<World, Map<Tile, number>>(),
   tileScoreCache: Map<Tile, number> = new Map(),
   areaScoreCache: Map<Tile, number> = new Map(),
   tileScore = (tile: Tile, player: Player | null = null): number => {
@@ -55,11 +63,7 @@ const startTileCache = new Map<World, Tile[]>(),
 
       const startingSquares = world
         .entries()
-        .filter((tile: Tile) =>
-          [Grassland, Plains, River].some(
-            (TerrainType) => tile.terrain() instanceof TerrainType
-          )
-        )
+        .filter(isStartTerrain)
         .map((tile: Tile) => ({
           tile,
           score: areaScore(tile),
@@ -73,6 +77,23 @@ const startTileCache = new Map<World, Tile[]>(),
     }
 
     return startTileCache.get(world)!;
+  },
+  // How many start-terrain tiles are on each tile's landmass.
+  buildableTiles = (world: World): Map<Tile, number> => {
+    if (!buildableTilesCache.has(world)) {
+      const counts = new Map<Tile, number>();
+
+      world.landMasses().forEach((landMass) => {
+        const tiles = landMass.tiles(),
+          count = tiles.filter(isStartTerrain).length;
+
+        tiles.forEach((tile) => counts.set(tile, count));
+      });
+
+      buildableTilesCache.set(world, counts);
+    }
+
+    return buildableTilesCache.get(world)!;
   };
 
 export const getRules = (
@@ -99,17 +120,30 @@ export const getRules = (
         }
       }
 
-      const startingSquares = pickStartTiles(world, engine);
-
-      startingSquares.forEach((tile: Tile) => {
-        if (
-          usedStartSquares.some(
-            (startSquare: Tile): boolean => startSquare.distanceFrom(tile) <= 4
-          )
-        ) {
-          startingSquares.splice(startingSquares.indexOf(tile), 1);
-        }
-      });
+      const counts = buildableTiles(world),
+        freeSquares = pickStartTiles(world, engine).filter(
+          (tile: Tile): boolean =>
+            !usedStartSquares.some(
+              (startSquare: Tile): boolean =>
+                startSquare.distanceFrom(tile) <= 4
+            )
+        ),
+        roomySquares = freeSquares.filter(
+          (tile: Tile): boolean =>
+            (counts.get(tile) ?? 0) >= minimumBuildableTiles
+        ),
+        // With no room anywhere, start on whichever landmass has the most.
+        most = freeSquares.reduce(
+          (most: number, tile: Tile): number =>
+            Math.max(most, counts.get(tile) ?? 0),
+          0
+        ),
+        startingSquares =
+          roomySquares.length > 0
+            ? roomySquares
+            : freeSquares.filter(
+                (tile: Tile): boolean => (counts.get(tile) ?? 0) === most
+              );
 
       return startingSquares[
         Math.floor(startingSquares.length * randomNumberGenerator())
