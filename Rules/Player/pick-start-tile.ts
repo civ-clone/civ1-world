@@ -13,6 +13,7 @@ import PickStartTile from '@civ-clone/core-world-generator/Rules/PickStartTile';
 import Player from '@civ-clone/core-player/Player';
 import Tile from '@civ-clone/core-world/Tile';
 import World from '@civ-clone/core-world/World';
+import civ1Distance from '../../lib/civ1Distance';
 import { instance as rngInstance } from '@civ-clone/core-random';
 
 // v474.05 only starts a civilization on a continent with at least this many
@@ -125,7 +126,7 @@ export const getRules = (
           (tile: Tile): boolean =>
             !usedStartSquares.some(
               (startSquare: Tile): boolean =>
-                startSquare.distanceFrom(tile) <= 4
+                civ1Distance(startSquare, tile) <= 4
             )
         ),
         roomySquares = freeSquares.filter(

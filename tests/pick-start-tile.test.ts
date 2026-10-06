@@ -9,6 +9,7 @@ import Terrain from '@civ-clone/core-terrain/Terrain';
 import TerrainFeatureRegistry from '@civ-clone/core-terrain-feature/TerrainFeatureRegistry';
 import Tile from '@civ-clone/core-world/Tile';
 import World from '@civ-clone/core-world/World';
+import civ1Distance from '../lib/civ1Distance';
 import { expect } from 'chai';
 import pickStartTile from '../Rules/Player/pick-start-tile';
 
@@ -74,7 +75,7 @@ describe('player:pick-start-tile', (): void => {
       const tile = pick([used], random)!;
 
       expect(tile).to.be.instanceOf(Tile);
-      expect(used.distanceFrom(tile)).to.be.greaterThan(4);
+      expect(civ1Distance(used, tile)).to.be.greaterThan(4);
     });
   });
 
