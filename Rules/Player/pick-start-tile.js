@@ -7,6 +7,7 @@ const Yields_1 = require("../../Yields");
 const Terrains_1 = require("../../Terrains");
 const Effect_1 = require("@civ-clone/core-rule/Effect");
 const PickStartTile_1 = require("@civ-clone/core-world-generator/Rules/PickStartTile");
+const civ1Distance_1 = require("../../lib/civ1Distance");
 const core_random_1 = require("@civ-clone/core-random");
 // v474.05 only starts a civilization on a continent with at least this many
 // Grassland, Plains or River tiles.
@@ -71,7 +72,7 @@ const getRules = (earthStartTileRegistry = EarthStartTileRegistry_1.instance, en
                     .map((startTile) => startTile.startTileForMap(world)));
             }
         }
-        const counts = buildableTiles(world), freeSquares = pickStartTiles(world, engine).filter((tile) => !usedStartSquares.some((startSquare) => startSquare.distanceFrom(tile) <= 4)), roomySquares = freeSquares.filter((tile) => { var _a; return ((_a = counts.get(tile)) !== null && _a !== void 0 ? _a : 0) >= exports.minimumBuildableTiles; }), 
+        const counts = buildableTiles(world), freeSquares = pickStartTiles(world, engine).filter((tile) => !usedStartSquares.some((startSquare) => (0, civ1Distance_1.default)(startSquare, tile) <= 4)), roomySquares = freeSquares.filter((tile) => { var _a; return ((_a = counts.get(tile)) !== null && _a !== void 0 ? _a : 0) >= exports.minimumBuildableTiles; }), 
         // With no room anywhere, start on whichever landmass has the most.
         most = freeSquares.reduce((most, tile) => { var _a; return Math.max(most, (_a = counts.get(tile)) !== null && _a !== void 0 ? _a : 0); }, 0), startingSquares = roomySquares.length > 0
             ? roomySquares
