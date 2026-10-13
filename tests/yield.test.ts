@@ -25,7 +25,13 @@ import {
   Shield,
 } from '../TerrainFeatures';
 import { Food, Production, Trade } from '../Yields';
-import { Irrigation, Mine, Railroad, Road } from '../TileImprovements';
+import {
+  Irrigation,
+  Mine,
+  Pollution,
+  Railroad,
+  Road,
+} from '../TileImprovements';
 import {
   RuleRegistry,
   instance as ruleRegistryInstance,
@@ -350,6 +356,25 @@ describe('tile:yield', async (): Promise<void> => {
         [world.get(9, 0), Production, 6], // Hills - Coal
         [world.get(12, 0), Production, 3], // Mountains
         [world.get(13, 0), Production, 3], // Mountains - Gold
+      ],
+      // Pollution halves each yield, rounded up, after everything else (civ-clone/web-renderer#32).
+      [
+        [Pollution],
+        [world.get(0, 0), Food, 0], // Arctic
+        [world.get(6, 0), Food, 1], // Grassland
+        [world.get(9, 0), Production, 1], // Hills - Coal
+        [world.get(11, 0), Trade, 1], // Jungle - Gems
+        [world.get(13, 0), Trade, 2], // Mountains - Gold
+        [world.get(15, 0), Food, 1], // Ocean - Fish
+        [world.get(21, 0), Production, 2], // Swamp - Oil
+      ],
+      [
+        [Irrigation, Pollution],
+        [world.get(3, 0), Food, 2], // Desert - Oasis
+      ],
+      [
+        [Mine, Road, Railroad, Pollution],
+        [world.get(9, 0), Production, 3], // Hills - Coal
       ],
     ] as [(typeof TileImprovement)[], ...[Tile, typeof Yield, number][]][]
   ).forEach(

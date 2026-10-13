@@ -5,9 +5,9 @@ import {
 } from '@civ-clone/core-tile-improvement/TileImprovementRegistry';
 import Criterion from '@civ-clone/core-rule/Criterion';
 import Effect from '@civ-clone/core-rule/Effect';
-import { High } from '@civ-clone/core-rule/Priorities';
+import { High, Low } from '@civ-clone/core-rule/Priorities';
 import Player from '@civ-clone/core-player/Player';
-import { Railroad } from '../../TileImprovements';
+import { Pollution, Railroad } from '../../TileImprovements';
 import Tile from '@civ-clone/core-world/Tile';
 import TileImprovement from '@civ-clone/core-tile-improvement/TileImprovement';
 import Yield from '@civ-clone/core-yield/Yield';
@@ -51,6 +51,37 @@ export const getRules: (
                 Railroad.name
               )
             );
+          }
+        )
+      )
+  ),
+
+  // Pollution halves a tile's food, shields and trade, rounded up, after everything else (v474.05 `CityWorker.cs`
+  //  ~L4138, civ-clone/web-renderer#32).
+  ...([Food, Production, Trade] as (typeof Yield)[]).map(
+    (YieldType: typeof Yield): YieldModifier =>
+      new YieldModifier(
+        new Low(),
+        new Criterion((tile: Tile): boolean =>
+          tileImprovementRegistry
+            .getByTile(tile)
+            .some(
+              (improvement: TileImprovement): boolean =>
+                improvement instanceof Pollution
+            )
+        ),
+        new Effect(
+          (tile: Tile, player: Player | null, yields: Yield[]): void => {
+            const currentTotal = yields
+                .filter((tileYield) => tileYield instanceof YieldType)
+                .reduce((total, tileYield) => total + tileYield.value(), 0),
+              halved = Math.ceil(currentTotal / 2);
+
+            if (halved === currentTotal) {
+              return;
+            }
+
+            yields.push(new YieldType(halved - currentTotal, Pollution.name));
           }
         )
       )
