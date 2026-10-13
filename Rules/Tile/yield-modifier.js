@@ -21,6 +21,19 @@ const getRules = (tileImprovementRegistry = TileImprovementRegistry_1.instance) 
             .reduce((total, tileYield) => total + tileYield.value(), 0);
         yields.push(new YieldType(Math.floor(currentTotal * multiplier), TileImprovements_1.Railroad.name));
     }))),
+    // Pollution halves a tile's food, shields and trade, rounded up, after everything else (v474.05 `CityWorker.cs`
+    //  ~L4138, civ-clone/web-renderer#32).
+    ...[Yields_1.Food, Yields_1.Production, Yields_1.Trade].map((YieldType) => new YieldModifier_1.default(new Priorities_1.Low(), new Criterion_1.default((tile) => tileImprovementRegistry
+        .getByTile(tile)
+        .some((improvement) => improvement instanceof TileImprovements_1.Pollution)), new Effect_1.default((tile, player, yields) => {
+        const currentTotal = yields
+            .filter((tileYield) => tileYield instanceof YieldType)
+            .reduce((total, tileYield) => total + tileYield.value(), 0), halved = Math.ceil(currentTotal / 2);
+        if (halved === currentTotal) {
+            return;
+        }
+        yields.push(new YieldType(halved - currentTotal, TileImprovements_1.Pollution.name));
+    }))),
 ];
 exports.getRules = getRules;
 exports.default = exports.getRules;

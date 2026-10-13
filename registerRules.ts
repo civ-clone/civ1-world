@@ -5,6 +5,7 @@ import distribution from './Rules/Terrain/distribution';
 import distributionGroups from './Rules/Terrain/distribution-groups';
 import feature from './Rules/Terrain/feature';
 import pillaged from './Rules/TileImprovement/pillaged';
+import removed from './Rules/TileImprovement/removed';
 import playerPickStartTile from './Rules/Player/pick-start-tile';
 import start from './Rules/Engine/start';
 import tileYield from './Rules/Tile/yield';
@@ -21,6 +22,7 @@ export const register = (game: Game): void =>
     ...distributionGroups(),
     ...feature(game.terrainFeatures),
     ...pillaged(game.tileImprovements, game.engine),
+    ...removed(game.tileImprovements, game.engine),
     ...playerPickStartTile(game.earthStartTiles, game.engine, game.rng),
     ...start(game.rules, game.generators, game.engine),
     ...tileYield(
