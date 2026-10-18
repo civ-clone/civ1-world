@@ -27,8 +27,9 @@ describe('civ1Distance', (): void => {
       // Wraps across the x edge: 2 across, not 78.
       [79, 10, 1, 10, 2],
       [1, 10, 79, 13, 4],
-      // Doesn't wrap across the y edge.
-      [10, 1, 10, 49, 48],
+      // Wraps across the y edge too: 2 across, not 48 (civ-clone/web-renderer#437).
+      [10, 1, 10, 49, 2],
+      [10, 0, 12, 47, 4],
     ] as [number, number, number, number, number][]
   ).forEach(([x1, y1, x2, y2, expected]): void =>
     it(`should measure (${x1}, ${y1}) to (${x2}, ${y2}) as ${expected}`, (): void => {
@@ -36,4 +37,12 @@ describe('civ1Distance', (): void => {
       expect(civ1Distance(tile(x2, y2), tile(x1, y1))).to.equal(expected);
     })
   );
+
+  it('should measure Vichy, 5 squares across the seam from Paris, as 5 rather than 60 (civ-clone/web-renderer#437)', (): void => {
+    const world = { width: (): number => 104, height: (): number => 65 },
+      at = (x: number, y: number): Tile =>
+        ({ map: () => world, x: () => x, y: () => y } as unknown as Tile);
+
+    expect(civ1Distance(at(33, 63), at(32, 3))).to.equal(5);
+  });
 });
