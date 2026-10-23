@@ -17,10 +17,12 @@ import TileImprovement from '@civ-clone/core-tile-improvement/TileImprovement';
 import availableRequirements from '../../Requirements';
 
 /**
- * The rule `entry` is played by: its tile improvement can go on a tile of one of the terrains it lists (`where`), that
- * doesn't have one already, with each tile improvement it `requires` on the tile and each advance it `requires`
- * discovered by the player building it. A tile improvement can be built by any one of its rules (`Available`'s
- * consumers take any that passes), so each entry is one way to build it.
+ * The rule `entry` is played by: its tile improvement can go on a tile of one of the terrains it lists (`where`, any
+ * terrain when it lists none), that doesn't have one already, with each tile improvement it `requires` on the tile and
+ * each advance it `requires` discovered by the player building it: the entry's range is the tile, and an advance is
+ * the working player's. A tile improvement can be built by any one of its rules (`Available`'s consumers take any
+ * that passes), so each entry is one way to build it, needing all of its targets. An entry this can't play (`any` of
+ * its targets, or a target that is neither a tile improvement nor an advance) is refused rather than played wrongly.
  */
 export const availableRulesFor = (
   entry: Requirement,
@@ -32,15 +34,36 @@ export const availableRulesFor = (
   }
 
   const Improvement = entry.subject as typeof TileImprovement,
-    terrains = entry.where ?? [],
+    terrains = entry.where,
     isImprovement = (target: Target): boolean =>
       Object.prototype.isPrototypeOf.call(TileImprovement, target),
-    improvements = entry.targets.filter(
+    isAdvance = (target: Target): boolean =>
+      Object.prototype.isPrototypeOf.call(Advance, target);
+
+  if (entry.mode !== 'all') {
+    throw new TypeError(
+      `'${entry.id}': a way to build a tile improvement needs all of its targets, so its mode must be 'all'.`
+    );
+  }
+
+  const unplayable = entry.targets.filter(
+    (target: Target): boolean => !isImprovement(target) && !isAdvance(target)
+  );
+
+  if (unplayable.length > 0) {
+    throw new TypeError(
+      `'${
+        entry.id
+      }': a tile improvement can need other tile improvements and advances, not ${unplayable
+        .map((target: any): string => target.id ?? target.name)
+        .join(', ')}.`
+    );
+  }
+
+  const improvements = entry.targets.filter(
       isImprovement
     ) as (typeof TileImprovement)[],
-    advances = entry.targets.filter(
-      (target: Target): boolean => !isImprovement(target)
-    ) as (typeof Advance)[];
+    advances = entry.targets.filter(isAdvance) as (typeof Advance)[];
 
   return [
     new Available(
@@ -51,8 +74,10 @@ export const availableRulesFor = (
           AvailableTileImprovement: typeof TileImprovement
         ): boolean => AvailableTileImprovement === Improvement
       ),
-      new Criterion((tile: Tile): boolean =>
-        terrains.some((TerrainType) => tile.terrain() instanceof TerrainType)
+      new Criterion(
+        (tile: Tile): boolean =>
+          terrains === null ||
+          terrains.some((TerrainType) => tile.terrain() instanceof TerrainType)
       ),
       new Criterion(
         (
