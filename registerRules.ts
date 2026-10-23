@@ -1,4 +1,5 @@
-import available from './Rules/TileImprovement/available';
+import availableRequirements from './Requirements';
+import { deriveAvailableRules } from './Rules/TileImprovement/available';
 import built from './Rules/TileImprovement/built';
 import created from './Rules/Terrain/created';
 import distribution from './Rules/Terrain/distribution';
@@ -13,9 +14,15 @@ import tileYieldModifier from './Rules/Tile/yield-modifier';
 import worldGeneratorPickGenerator from './Rules/WorldGenerator/pick-generator';
 import { Game, defaultGame } from '@civ-clone/civ1-game';
 
-export const register = (game: Game): void =>
+export const register = (game: Game): void => {
+  // Where tile improvements can go, from the entries in `Requirements`: their rules come first, as they always did
+  //  (civ-clone/web-renderer#37).
+  game.requirements.add(
+    deriveAvailableRules(game.playerResearch, game.tileImprovements),
+    ...availableRequirements
+  );
+
   game.rules.register(
-    ...available(game.playerResearch, game.tileImprovements),
     ...built(game.tileImprovements, game.engine),
     ...created(game.rules, game.availableTerrainFeatures),
     ...distribution(),
@@ -33,6 +40,7 @@ export const register = (game: Game): void =>
     ...tileYieldModifier(game.tileImprovements),
     ...worldGeneratorPickGenerator(game.generators, game.engine, game.rng)
   );
+};
 
 // The plugin loader imports each package for this side effect. Until it passes
 // a `Game` of its own, dropping it would produce a game with silently absent
