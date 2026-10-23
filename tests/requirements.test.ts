@@ -7,7 +7,10 @@ import Available from '@civ-clone/core-tile-improvement/Rules/Available';
 import { Game } from '@civ-clone/core-game/Game';
 import Player from '@civ-clone/core-player/Player';
 import PlayerResearch from '@civ-clone/core-science/PlayerResearch';
-import { Requirement } from '@civ-clone/core-requirement/Requirement';
+import {
+  Condition,
+  Requirement,
+} from '@civ-clone/core-requirement/Requirement';
 import Rule from '@civ-clone/core-rule/Rule';
 import Tile from '@civ-clone/core-world/Tile';
 import TileImprovement from '@civ-clone/core-tile-improvement/TileImprovement';
@@ -55,7 +58,7 @@ describe('civ1-world requirements', (): void => {
       expect(game.rules.getById(entry.id), entry.id).equal(rules[0]);
     });
 
-    // Written out as \`Rules/TileImprovement/available\` had them, so a reordered table fails here.
+    // Written out as `Rules/TileImprovement/available` had them, so a reordered table fails here.
     expect(ids(getRules())).eql([
       'civ1-world:tile-improvement/available/Irrigation',
       'civ1-world:tile-improvement/available/Mine',
@@ -105,7 +108,41 @@ describe('civ1-world requirements', (): void => {
 
     game.tileImprovements.register(new Road(grassland));
 
+    // Not a second Road where there's one already, but now a Railroad.
+    expect(canBuild(Road, grassland)).false;
     expect(canBuild(Railroad, grassland)).true;
+  });
+
+  it('should refuse an entry it cannot play, and let one with no terrains go anywhere', async (): Promise<void> => {
+    const { canBuild, game, world } = await setUp(),
+      [mine] = availableRequirements.filter(
+        (entry: Requirement): boolean => entry.subject === Mine
+      ),
+      replaceMine = (changes: object): void =>
+        game.requirements.replace(
+          mine.id,
+          new Requirement({
+            id: mine.id,
+            subject: Mine,
+            relation: 'requires',
+            targets: [],
+            range: 'tile',
+            where: mine.where as any,
+            ...changes,
+          })
+        );
+
+    expect(() =>
+      replaceMine({ targets: [Road, Irrigation], mode: 'any' })
+    ).to.throw(TypeError, /mode must be 'all'/);
+    expect(() =>
+      replaceMine({ targets: [new Condition('test:somewhere')] })
+    ).to.throw(TypeError, /not test:somewhere/);
+    expect(game.requirements.getById(mine.id)).equal(mine);
+
+    replaceMine({ where: undefined });
+
+    expect(canBuild(Mine, world.get(6, 0))).true;
   });
 
   it('should change where an improvement can go when a plugin changes an entry', async (): Promise<void> => {
