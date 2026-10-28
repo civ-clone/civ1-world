@@ -490,6 +490,11 @@ describe('tile:yield under a government', async (): Promise<void> => {
       [Republic, [Pollution], world.get(13, 0), Trade, 4], // Mountains - Gold
       [Democracy, [], world.get(14, 0), Trade, 3], // Ocean
       [Democracy, [Irrigation], world.get(6, 0), Food, 3], // Grassland
+      // The order of the steps: the railroad before the penalty (6 → 5, not 3 → 4) and the bonus (1 → 2, not 2 → 3),
+      //  pollution after the penalty (3 → 2 → 1, not 2 → 2).
+      [Despotism, [Road, Railroad], world.get(21, 0), Production, 5], // Swamp - Oil
+      [Republic, [Road, Railroad], world.get(6, 0), Trade, 2], // Grassland
+      [Despotism, [Irrigation, Pollution], world.get(6, 0), Food, 1], // Grassland
     ] as [
       typeof Government,
       (typeof TileImprovement)[],
