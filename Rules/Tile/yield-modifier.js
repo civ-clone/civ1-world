@@ -18,7 +18,12 @@ const playerGovernment = (player, playerGovernmentRegistry) => {
         return playerGovernmentRegistry.getByPlayer(player);
     }
     catch (e) {
-        return null;
+        // A player with no government yet, such as one being set up.
+        if (e instanceof TypeError &&
+            e.message.match(/Wrong number of PlayerGovernments/)) {
+            return null;
+        }
+        throw e;
     }
 };
 const getRules = (tileImprovementRegistry = TileImprovementRegistry_1.instance, playerGovernmentRegistry = PlayerGovernmentRegistry_1.instance) => [
