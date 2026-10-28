@@ -26,16 +26,6 @@ import {
 import { Food, Production, Trade } from '../../Yields';
 import { Irrigation, Mine, Road } from '../../TileImprovements';
 import {
-  Communism,
-  Democracy,
-  Monarchy,
-  Republic,
-} from '@civ-clone/library-government/Governments';
-import {
-  PlayerGovernmentRegistry,
-  instance as playerGovernmentRegistryInstance,
-} from '@civ-clone/core-government/PlayerGovernmentRegistry';
-import {
   TerrainFeatureRegistry,
   instance as terrainFeatureRegistryInstance,
 } from '@civ-clone/core-terrain-feature/TerrainFeatureRegistry';
@@ -45,7 +35,6 @@ import {
 } from '@civ-clone/core-tile-improvement/TileImprovementRegistry';
 import Criterion from '@civ-clone/core-rule/Criterion';
 import Effect from '@civ-clone/core-rule/Effect';
-import Player from '@civ-clone/core-player/Player';
 import Terrain from '@civ-clone/core-terrain/Terrain';
 import TerrainFeature from '@civ-clone/core-terrain-feature/TerrainFeature';
 import Tile from '@civ-clone/core-world/Tile';
@@ -55,12 +44,10 @@ import Yield from '@civ-clone/core-yield/Yield';
 
 export const getRules: (
   tileImprovementRegistry?: TileImprovementRegistry,
-  terrainFeatureRegistry?: TerrainFeatureRegistry,
-  playerGovernmentRegistry?: PlayerGovernmentRegistry
+  terrainFeatureRegistry?: TerrainFeatureRegistry
 ) => TileYield[] = (
   tileImprovementRegistry: TileImprovementRegistry = tileImprovementRegistryInstance,
-  terrainFeatureRegistry: TerrainFeatureRegistry = terrainFeatureRegistryInstance,
-  playerGovernmentRegistry: PlayerGovernmentRegistry = playerGovernmentRegistryInstance
+  terrainFeatureRegistry: TerrainFeatureRegistry = terrainFeatureRegistryInstance
 ) => [
   ...(
     [
@@ -88,16 +75,18 @@ export const getRules: (
       )
   ),
 
+  // The special resources' yields, which replace the terrain's in v474.05's table (`GameData.cs` L322-333): Coal is
+  //  1/2/0 on Hills, Gold 0/1/6 on Mountains, and so on.
   ...(
     [
       [Production, Coal, 2],
-      [Food, Fish, 1],
-      [Food, Game, 1],
-      [Trade, Gems, 2],
-      [Trade, Gold, 3],
-      [Production, Horse, 1],
-      [Food, Oasis, 2],
-      [Production, Oil, 3],
+      [Food, Fish, 2],
+      [Food, Game, 2],
+      [Trade, Gems, 4],
+      [Trade, Gold, 6],
+      [Production, Horse, 2],
+      [Food, Oasis, 3],
+      [Production, Oil, 4],
       [Food, Seal, 2],
       [Production, Shield, 1],
     ] as [typeof Yield, typeof TerrainFeature, number][]
@@ -119,49 +108,6 @@ export const getRules: (
       )
   ),
 
-  ...(
-    [
-      [Production, Coal, 1],
-      [Food, Fish, 1],
-      [Food, Game, 1],
-      [Trade, Gems, 2],
-      [Trade, Gold, 2],
-      [Production, Horse, 1],
-      [Food, Oasis, 1],
-      [Production, Oil, 1],
-      [Food, Seal, 1],
-    ] as [typeof Yield, typeof TerrainFeature, number][]
-  ).map(
-    ([YieldType, Feature, value]: [
-      typeof Yield,
-      typeof TerrainFeature,
-      number
-    ]): TileYield =>
-      new TileYield(
-        new Criterion((tile: Tile, player: Player | null): boolean => {
-          if (!player) {
-            return false;
-          }
-
-          try {
-            return playerGovernmentRegistry
-              .getByPlayer(player)
-              .is(Communism, Democracy, Monarchy, Republic);
-          } catch (e) {
-            return false;
-          }
-        }),
-        new Criterion((tile: Tile): boolean =>
-          terrainFeatureRegistry
-            .getByTerrain(tile.terrain())
-            .some(
-              (feature: TerrainFeature): boolean => feature instanceof Feature
-            )
-        ),
-        new Effect((): Yield => new YieldType(value, Feature.name))
-      )
-  ),
-
   new TileYield(
     new Criterion((tile: Tile): boolean => tile.terrain() instanceof Ocean),
     new Effect((): Yield => new Trade(2, Ocean.name))
@@ -172,65 +118,18 @@ export const getRules: (
     new Effect((): Yield => new Trade(1))
   ),
 
-  new TileYield(
-    new Criterion((tile: Tile, player: Player | null): boolean => {
-      if (!player) {
-        return false;
-      }
-
-      try {
-        return playerGovernmentRegistry
-          .getByPlayer(player)
-          .is(Democracy, Republic);
-      } catch (e) {
-        return false;
-      }
-    }),
-    new Criterion(
-      (tile: Tile): boolean =>
-        tile.terrain() instanceof River || tile.terrain() instanceof Ocean
-    ),
-    new Effect((): Yield => new Trade(1, Ocean.name))
-  ),
-
+  // Irrigation and mines, as v474.05 applies them (`-1 - IrrigationEffect`, `-1 - MiningEffect` from `GameData.cs`
+  //  L295-306), whatever the government: what Anarchy and Despotism take off is the tile modifier's
+  //  (civ-clone/web-renderer#401).
   ...(
     [
       [Desert, Food, Irrigation, 1],
       [Desert, Production, Mine, 1],
+      [Grassland, Food, Irrigation, 1],
       [Hills, Food, Irrigation, 1],
-      [Hills, Production, Mine, 2],
+      [Hills, Production, Mine, 3],
       [Mountains, Production, Mine, 1],
       [Plains, Food, Irrigation, 1],
-    ] as [typeof Terrain, typeof Yield, typeof TileImprovement, number][]
-  ).map(
-    ([ImprovedTerrain, YieldType, Improvement, value]: [
-      typeof Terrain,
-      typeof Yield,
-      typeof TileImprovement,
-      number
-    ]): TileYield =>
-      new TileYield(
-        new Criterion(
-          (tile: Tile): boolean => tile.terrain() instanceof ImprovedTerrain
-        ),
-        new Criterion((tile: Tile): boolean =>
-          tileImprovementRegistry
-            .getByTile(tile)
-            .some(
-              (improvement: TileImprovement): boolean =>
-                improvement instanceof Improvement
-            )
-        ),
-        new Effect((): Yield => new YieldType(value, Improvement.name))
-      )
-  ),
-
-  ...(
-    [
-      [Desert, Production, Mine, 1],
-      [Grassland, Food, Irrigation, 1],
-      [Hills, Production, Mine, 1],
-      [Mountains, Production, Mine, 1],
       [River, Food, Irrigation, 1],
     ] as [typeof Terrain, typeof Yield, typeof TileImprovement, number][]
   ).map(
@@ -241,19 +140,6 @@ export const getRules: (
       number
     ]): TileYield =>
       new TileYield(
-        new Criterion((tile: Tile, player: Player | null): boolean => {
-          if (!player) {
-            return false;
-          }
-
-          try {
-            return playerGovernmentRegistry
-              .getByPlayer(player)
-              .is(Communism, Democracy, Monarchy, Republic);
-          } catch (e) {
-            return false;
-          }
-        }),
         new Criterion(
           (tile: Tile): boolean => tile.terrain() instanceof ImprovedTerrain
         ),
@@ -272,37 +158,6 @@ export const getRules: (
   ...[Desert, Grassland, Plains].map(
     (TerrainType: typeof Terrain): TileYield =>
       new TileYield(
-        new Criterion(
-          (tile: Tile): boolean => tile.terrain() instanceof TerrainType
-        ),
-        new Criterion((tile: Tile): boolean =>
-          tileImprovementRegistry
-            .getByTile(tile)
-            .some(
-              (improvement: TileImprovement): boolean =>
-                improvement instanceof Road
-            )
-        ),
-        new Effect((): Yield => new Trade(1, Road.name))
-      )
-  ),
-
-  ...[Desert, Grassland, Plains].map(
-    (TerrainType: typeof Terrain): TileYield =>
-      new TileYield(
-        new Criterion((tile: Tile, player: Player | null): boolean => {
-          if (!player) {
-            return false;
-          }
-
-          try {
-            return playerGovernmentRegistry
-              .getByPlayer(player)
-              .is(Democracy, Republic);
-          } catch (e) {
-            return false;
-          }
-        }),
         new Criterion(
           (tile: Tile): boolean => tile.terrain() instanceof TerrainType
         ),
