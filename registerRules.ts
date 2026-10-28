@@ -32,12 +32,8 @@ export const register = (game: Game): void => {
     ...removed(game.tileImprovements, game.engine),
     ...playerPickStartTile(game.earthStartTiles, game.engine, game.rng),
     ...start(game.rules, game.generators, game.engine),
-    ...tileYield(
-      game.tileImprovements,
-      game.terrainFeatures,
-      game.playerGovernments
-    ),
-    ...tileYieldModifier(game.tileImprovements),
+    ...tileYield(game.tileImprovements, game.terrainFeatures),
+    ...tileYieldModifier(game.tileImprovements, game.playerGovernments),
     ...worldGeneratorPickGenerator(game.generators, game.engine, game.rng)
   );
 };
