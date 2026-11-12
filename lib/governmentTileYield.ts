@@ -9,6 +9,12 @@ import {
 import { Food, Production, Trade } from '../Yields';
 import PlayerGovernment from '@civ-clone/core-government/PlayerGovernment';
 import Yield from '@civ-clone/core-yield/Yield';
+import tilePenalty, {
+  TilePenalty,
+} from '@civ-clone/base-government-tile-penalty/lib/tilePenalty';
+import baseTradeBonus, {
+  TradeBonus,
+} from '@civ-clone/base-government-trade-bonus/lib/tradeBonus';
 
 // The providers of the yields the government's steps add to a tile, so a city can tell them from the tile's own.
 export const DESPOTISM_PENALTY = 'civ1-world:despotism-penalty';
@@ -25,33 +31,23 @@ export const governmentTileYieldTypes: (typeof Yield)[] = [
  *  `F0_1d12_6abc_GetCityResourceCount`, L4102-4113, civ-clone/web-renderer#401): under Anarchy and Despotism, a yield
  *  of more than 2 loses 1, unless the city is celebrating.
  */
-export const despotismPenalty = (
-  value: number,
-  government: PlayerGovernment | null,
-  celebrating: boolean = false
-): number =>
-  value > 2 && !celebrating && government?.is(Anarchy, Despotism)
-    ? value - 1
-    : value;
+export const despotismPenalty: TilePenalty = tilePenalty(
+  [Anarchy, Despotism],
+  2,
+  1
+);
 
 /**
  * Step 2, on what step 1 left (L4115-4134): trade, if there is any, gains 1 under The Republic and Democracy, or, while
  *  the city celebrates, under Monarchy and Communism too.
  */
-export const tradeBonus = (
-  YieldType: typeof Yield,
-  value: number,
-  government: PlayerGovernment | null,
-  celebrating: boolean = false
-): number =>
-  value > 0 &&
-  YieldType === Trade &&
-  government !== null &&
-  (celebrating
-    ? government.is(Communism, Democracy, Monarchy, Republic)
-    : government.is(Democracy, Republic))
-    ? value + 1
-    : value;
+export const tradeBonus: TradeBonus = baseTradeBonus(
+  Trade,
+  [Democracy, Republic],
+  [Communism, Democracy, Monarchy, Republic],
+  0,
+  1
+);
 
 /**
  * Both steps, before pollution halves the result. `value` is the yield after the railroad. A tile's own yields are
