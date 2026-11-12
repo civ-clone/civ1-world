@@ -45,8 +45,8 @@ export const tradeBonus: TradeBonus = baseTradeBonus(
   Trade,
   [Democracy, Republic],
   [Communism, Democracy, Monarchy, Republic],
-  1,
-  0
+  0,
+  1
 );
 
 /**
