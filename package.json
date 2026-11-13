@@ -18,10 +18,10 @@
     "ts:compile": "tsc --build tsconfig.json"
   },
   "devDependencies": {
-    "@civ-clone/base-unit-action-clear-forest": "^0.1.8",
-    "@civ-clone/base-unit-action-clear-jungle": "^0.1.7",
-    "@civ-clone/base-unit-action-clear-swamp": "^0.1.7",
-    "@civ-clone/base-unit-action-plant-forest": "^0.1.9",
+    "@civ-clone/base-unit-action-clear-forest": "github:civ-clone/base-unit-action-clear-forest#feat/terrain-changed",
+    "@civ-clone/base-unit-action-clear-jungle": "github:civ-clone/base-unit-action-clear-jungle#feat/terrain-changed",
+    "@civ-clone/base-unit-action-clear-swamp": "github:civ-clone/base-unit-action-clear-swamp#feat/terrain-changed",
+    "@civ-clone/base-unit-action-plant-forest": "github:civ-clone/base-unit-action-plant-forest#feat/terrain-changed",
     "@civ-clone/simple-world-generator": "github:civ-clone/simple-world-generator",
     "@types/chai": "^4.0.0",
     "@types/mocha": "^8.0.0",
@@ -36,6 +36,7 @@
   "dependencies": {
     "@civ-clone/base-government-tile-penalty": "^0.1.0",
     "@civ-clone/base-government-trade-bonus": "^0.1.0",
+    "@civ-clone/base-terrain-feature": "github:civ-clone/base-terrain-feature#feat/terrain-changed",
     "@civ-clone/civ1-earth-generator": "github:civ-clone/civ1-earth-generator",
     "@civ-clone/civ1-game": "github:civ-clone/civ1-game",
     "@civ-clone/core-engine": "^0.1.0",
@@ -49,7 +50,7 @@
     "@civ-clone/core-terrain": "^0.1.0",
     "@civ-clone/core-terrain-feature": "^0.1.0",
     "@civ-clone/core-tile-improvement": "^0.1.6",
-    "@civ-clone/core-world": "^0.1.23",
+    "@civ-clone/core-world": "github:civ-clone/core-world#feat/terrain-changed",
     "@civ-clone/core-world-generator": "^0.1.7",
     "@civ-clone/core-yield": "^0.1.0",
     "@civ-clone/library-government": "^0.1.0",
