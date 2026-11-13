@@ -41,6 +41,7 @@
     "@civ-clone/base-government-tile-penalty": "^0.1.0",
     "@civ-clone/base-government-trade-bonus": "^0.1.0",
     "@civ-clone/base-terrain-feature": "^0.1.0",
+    "@civ-clone/base-world-start": "github:civ-clone/base-world-start#feat/world-start",
     "@civ-clone/civ1-earth-generator": "github:civ-clone/civ1-earth-generator",
     "@civ-clone/civ1-game": "github:civ-clone/civ1-game",
     "@civ-clone/core-engine": "^0.1.0",

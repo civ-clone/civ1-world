@@ -9,6 +9,7 @@ import {
 import Earth from '@civ-clone/civ1-earth-generator/Earth';
 import Effect from '@civ-clone/core-rule/Effect';
 import PickGenerator from '@civ-clone/core-world-generator/Rules/PickGenerator';
+import pickGenerator from '@civ-clone/base-world-start/lib/pickGenerator';
 import { instance as rngInstance } from '@civ-clone/core-random';
 
 export const getRules: (
@@ -26,15 +27,7 @@ export const getRules: (
         return Earth;
       }
 
-      const availableGenerators = generatorRegistry.entries();
-
-      if (availableGenerators.length === 0) {
-        throw new TypeError('No available `World` generators.');
-      }
-
-      return availableGenerators[
-        Math.floor(availableGenerators.length * randomNumberGenerator())
-      ];
+      return pickGenerator(generatorRegistry, randomNumberGenerator);
     })
   ),
 ];
