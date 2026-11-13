@@ -18,13 +18,13 @@
     "ts:compile": "tsc --build tsconfig.json"
   },
   "devDependencies": {
-    "@civ-clone/base-unit-action-clear-forest": "github:civ-clone/base-unit-action-clear-forest#feat/terrain-changed",
+    "@civ-clone/base-unit-action-clear-forest": "^0.1.9",
     "@civ-clone/base-unit-action-clear-forest-released": "npm:@civ-clone/base-unit-action-clear-forest@0.1.8",
-    "@civ-clone/base-unit-action-clear-jungle": "github:civ-clone/base-unit-action-clear-jungle#feat/terrain-changed",
+    "@civ-clone/base-unit-action-clear-jungle": "^0.1.8",
     "@civ-clone/base-unit-action-clear-jungle-released": "npm:@civ-clone/base-unit-action-clear-jungle@0.1.7",
-    "@civ-clone/base-unit-action-clear-swamp": "github:civ-clone/base-unit-action-clear-swamp#feat/terrain-changed",
+    "@civ-clone/base-unit-action-clear-swamp": "^0.1.8",
     "@civ-clone/base-unit-action-clear-swamp-released": "npm:@civ-clone/base-unit-action-clear-swamp@0.1.7",
-    "@civ-clone/base-unit-action-plant-forest": "github:civ-clone/base-unit-action-plant-forest#feat/terrain-changed",
+    "@civ-clone/base-unit-action-plant-forest": "^0.1.10",
     "@civ-clone/base-unit-action-plant-forest-released": "npm:@civ-clone/base-unit-action-plant-forest@0.1.9",
     "@civ-clone/simple-world-generator": "github:civ-clone/simple-world-generator",
     "@types/chai": "^4.0.0",
