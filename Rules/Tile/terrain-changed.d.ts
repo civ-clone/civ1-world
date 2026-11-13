@@ -1,4 +1,3 @@
-import { RuleRegistry } from '@civ-clone/core-rule/RuleRegistry';
 import { TerrainFeatureRegistry } from '@civ-clone/core-terrain-feature/TerrainFeatureRegistry';
 import TerrainChanged from '@civ-clone/core-world/Rules/TerrainChanged';
 export declare const FOREST_TO_PLAINS =
@@ -10,9 +9,12 @@ export declare const TO_GRASSLAND = 'civ1-world:terrain-changed/to-grassland';
  * resource stays with the square as the new terrain's own special
  * (civ-clone/web-renderer#281), and every feature of the old terrain is
  * unregistered. Other terrain changes leave the features where they are.
+ *
+ * TODO: these treat every feature as a special. When rivers arrive as a
+ *  `Watercourse` feature (civ-clone/web-renderer#1008, G15), exclude them here
+ *  (`isResource` from base-terrain-feature) and carry them over instead.
  */
 export declare const getRules: (
-  ruleRegistry?: RuleRegistry,
   terrainFeatureRegistry?: TerrainFeatureRegistry
 ) => TerrainChanged[];
 export default getRules;

@@ -1,16 +1,11 @@
 import { Forest, Grassland, Jungle, Plains, Swamp } from '../../Terrains';
 import { Game, Horse, Shield } from '../../TerrainFeatures';
 import {
-  RuleRegistry,
-  instance as ruleRegistryInstance,
-} from '@civ-clone/core-rule/RuleRegistry';
-import {
   TerrainFeatureRegistry,
   instance as terrainFeatureRegistryInstance,
 } from '@civ-clone/core-terrain-feature/TerrainFeatureRegistry';
 import Criterion from '@civ-clone/core-rule/Criterion';
 import Effect from '@civ-clone/core-rule/Effect';
-import Feature from '@civ-clone/core-terrain-feature/Rules/Feature';
 import Terrain from '@civ-clone/core-terrain/Terrain';
 import TerrainChanged from '@civ-clone/core-world/Rules/TerrainChanged';
 import TerrainFeature from '@civ-clone/core-terrain-feature/TerrainFeature';
@@ -26,9 +21,12 @@ export const TO_GRASSLAND = 'civ1-world:terrain-changed/to-grassland';
  * resource stays with the square as the new terrain's own special
  * (civ-clone/web-renderer#281), and every feature of the old terrain is
  * unregistered. Other terrain changes leave the features where they are.
+ *
+ * TODO: these treat every feature as a special. When rivers arrive as a
+ *  `Watercourse` feature (civ-clone/web-renderer#1008, G15), exclude them here
+ *  (`isResource` from base-terrain-feature) and carry them over instead.
  */
 export const getRules = (
-  ruleRegistry: RuleRegistry = ruleRegistryInstance,
   terrainFeatureRegistry: TerrainFeatureRegistry = terrainFeatureRegistryInstance
 ): TerrainChanged[] => [
   // Clearing a Forest: its Game becomes Horses on the Plains.
@@ -60,19 +58,13 @@ export const getRules = (
       )
     )
   ),
-  // Clearing a Jungle or a Swamp: its special is lost, and the Grassland rolls for a Shield as a new square would.
+  // Clearing a Jungle or a Swamp: its special is lost. The conversion itself rolls the Grassland for a Shield before
+  //  it sets the terrain, as it always did, so a released conversion and these rules never roll twice.
   new TerrainChanged(
     TO_GRASSLAND,
     new Criterion(changesTerrain([Jungle, Swamp], [Grassland])),
     new Effect(
-      replaceFeatures(
-        terrainFeatureRegistry,
-        (features: TerrainFeature[], to: Terrain): TerrainFeature[] => {
-          ruleRegistry.process(Feature, Shield, to);
-
-          return [];
-        }
-      )
+      replaceFeatures(terrainFeatureRegistry, (): TerrainFeature[] => [])
     )
   ),
 ];

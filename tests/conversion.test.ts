@@ -20,6 +20,10 @@ import World from '@civ-clone/core-world/World';
 import { expect } from 'chai';
 import { instance as rng } from '@civ-clone/core-random';
 import { register } from '../registerRules';
+import ReleasedClearForest from '@civ-clone/base-unit-action-clear-forest-released/ClearForest';
+import ReleasedClearJungle from '@civ-clone/base-unit-action-clear-jungle-released/ClearJungle';
+import ReleasedClearSwamp from '@civ-clone/base-unit-action-clear-swamp-released/ClearSwamp';
+import ReleasedPlantForest from '@civ-clone/base-unit-action-plant-forest-released/PlantForest';
 
 // What finishing each terrain conversion leaves on the square, with the whole
 //  civ1 ruleset registered: the terrain, every feature in the registry in
@@ -102,112 +106,143 @@ const convert = (
   ];
 };
 
-describe('terrain conversions', (): void => {
-  describe('ClearForest', (): void => {
-    it('turns Forest into Plains, with no special', (): void => {
-      expect(convert(ClearForest, Forest, [])).to.deep.equal([
-        'Plains',
-        ['Coal (before)', 'Fish (after)'],
-        0,
-      ]);
-    });
-
-    it('turns Forest with Game into Plains with Horses', (): void => {
-      expect(convert(ClearForest, Forest, [Game])).to.deep.equal([
-        'Plains',
-        ['Coal (before)', 'Fish (after)', 'Horse (square)'],
-        0,
-      ]);
-    });
-
-    it('turns any features into one Horses', (): void => {
-      expect(convert(ClearForest, Forest, [Game, Shield])).to.deep.equal([
-        'Plains',
-        ['Coal (before)', 'Fish (after)', 'Horse (square)'],
-        0,
-      ]);
-      expect(convert(ClearForest, Forest, [Shield])).to.deep.equal([
-        'Plains',
-        ['Coal (before)', 'Fish (after)', 'Horse (square)'],
-        0,
-      ]);
-    });
-  });
-
-  (
+// The same results from the conversions this ruleset pairs with and from the
+//  last releases before `TerrainChanged`, which still moved the features
+//  themselves: either can run against these rules without a feature or a draw
+//  changing.
+(
+  [
+    ['', { ClearForest, ClearJungle, ClearSwamp, PlantForest }],
     [
-      [ClearJungle, Jungle, Gems],
-      [ClearSwamp, Swamp, Oil],
-    ] as [Conversion, typeof Terrain, typeof TerrainFeature][]
-  ).forEach(([Action, TerrainType, Special]): void => {
-    describe(Action.name, (): void => {
-      [[], [Special], [Special, Shield], [Shield]].forEach((features) => {
-        const label = features.map((feature) => feature.name).join(', ');
+      ' (the conversions released before TerrainChanged)',
+      {
+        ClearForest: ReleasedClearForest,
+        ClearJungle: ReleasedClearJungle,
+        ClearSwamp: ReleasedClearSwamp,
+        PlantForest: ReleasedPlantForest,
+      },
+    ],
+  ] as unknown as [
+    string,
+    {
+      ClearForest: typeof ClearForest;
+      ClearJungle: typeof ClearJungle;
+      ClearSwamp: typeof ClearSwamp;
+      PlantForest: typeof PlantForest;
+    }
+  ][]
+).forEach(([label, { ClearForest, ClearJungle, ClearSwamp, PlantForest }]) =>
+  describe(`terrain conversions${label}`, (): void => {
+    describe('ClearForest', (): void => {
+      it('turns Forest into Plains, with no special', (): void => {
+        expect(convert(ClearForest, Forest, [])).to.deep.equal([
+          'Plains',
+          ['Coal (before)', 'Fish (after)'],
+          0,
+        ]);
+      });
 
-        it(`turns ${TerrainType.name} [${label}] into Grassland, dropping its features and rolling for a Shield`, (): void => {
-          expect(
-            convert(Action, TerrainType, features, shieldSeed(true))
-          ).to.deep.equal([
-            'Grassland',
-            ['Coal (before)', 'Fish (after)', 'Shield (square)'],
-            1,
-          ]);
-          expect(
-            convert(Action, TerrainType, features, shieldSeed(false))
-          ).to.deep.equal(['Grassland', ['Coal (before)', 'Fish (after)'], 1]);
-        });
+      it('turns Forest with Game into Plains with Horses', (): void => {
+        expect(convert(ClearForest, Forest, [Game])).to.deep.equal([
+          'Plains',
+          ['Coal (before)', 'Fish (after)', 'Horse (square)'],
+          0,
+        ]);
+      });
+
+      it('turns any features into one Horses', (): void => {
+        expect(convert(ClearForest, Forest, [Game, Shield])).to.deep.equal([
+          'Plains',
+          ['Coal (before)', 'Fish (after)', 'Horse (square)'],
+          0,
+        ]);
+        expect(convert(ClearForest, Forest, [Shield])).to.deep.equal([
+          'Plains',
+          ['Coal (before)', 'Fish (after)', 'Horse (square)'],
+          0,
+        ]);
       });
     });
-  });
 
-  describe('PlantForest', (): void => {
     (
       [
-        [Plains, Horse],
-        [Grassland, null],
-        [Jungle, Gems],
-        [Swamp, Oil],
-      ] as [typeof Terrain, typeof TerrainFeature | null][]
-    ).forEach(([TerrainType, Special]): void => {
-      it(`turns ${TerrainType.name} into Forest, with no special`, (): void => {
-        expect(convert(PlantForest, TerrainType, [])).to.deep.equal([
-          'Forest',
-          ['Coal (before)', 'Fish (after)'],
-          0,
-        ]);
-      });
+        [ClearJungle, Jungle, Gems],
+        [ClearSwamp, Swamp, Oil],
+      ] as [Conversion, typeof Terrain, typeof TerrainFeature][]
+    ).forEach(([Action, TerrainType, Special]): void => {
+      describe(Action.name, (): void => {
+        [[], [Special], [Special, Shield], [Shield]].forEach((features) => {
+          const label = features.map((feature) => feature.name).join(', ');
 
-      it(`turns ${TerrainType.name} with a Shield into Forest, with no special`, (): void => {
-        expect(convert(PlantForest, TerrainType, [Shield])).to.deep.equal([
-          'Forest',
-          ['Coal (before)', 'Fish (after)'],
-          0,
-        ]);
+          it(`turns ${TerrainType.name} [${label}] into Grassland, dropping its features and rolling for a Shield`, (): void => {
+            expect(
+              convert(Action, TerrainType, features, shieldSeed(true))
+            ).to.deep.equal([
+              'Grassland',
+              ['Coal (before)', 'Fish (after)', 'Shield (square)'],
+              1,
+            ]);
+            expect(
+              convert(Action, TerrainType, features, shieldSeed(false))
+            ).to.deep.equal([
+              'Grassland',
+              ['Coal (before)', 'Fish (after)'],
+              1,
+            ]);
+          });
+        });
       });
+    });
 
-      if (Special !== null) {
-        it(`turns ${TerrainType.name} with ${Special.name} into Forest with Game`, (): void => {
-          expect(convert(PlantForest, TerrainType, [Special])).to.deep.equal([
+    describe('PlantForest', (): void => {
+      (
+        [
+          [Plains, Horse],
+          [Grassland, null],
+          [Jungle, Gems],
+          [Swamp, Oil],
+        ] as [typeof Terrain, typeof TerrainFeature | null][]
+      ).forEach(([TerrainType, Special]): void => {
+        it(`turns ${TerrainType.name} into Forest, with no special`, (): void => {
+          expect(convert(PlantForest, TerrainType, [])).to.deep.equal([
             'Forest',
-            ['Coal (before)', 'Fish (after)', 'Game (square)'],
-            0,
-          ]);
-          expect(
-            convert(PlantForest, TerrainType, [Special, Shield])
-          ).to.deep.equal([
-            'Forest',
-            ['Coal (before)', 'Fish (after)', 'Game (square)'],
-            0,
-          ]);
-          expect(
-            convert(PlantForest, TerrainType, [Shield, Special])
-          ).to.deep.equal([
-            'Forest',
-            ['Coal (before)', 'Fish (after)', 'Game (square)'],
+            ['Coal (before)', 'Fish (after)'],
             0,
           ]);
         });
-      }
+
+        it(`turns ${TerrainType.name} with a Shield into Forest, with no special`, (): void => {
+          expect(convert(PlantForest, TerrainType, [Shield])).to.deep.equal([
+            'Forest',
+            ['Coal (before)', 'Fish (after)'],
+            0,
+          ]);
+        });
+
+        if (Special !== null) {
+          it(`turns ${TerrainType.name} with ${Special.name} into Forest with Game`, (): void => {
+            expect(convert(PlantForest, TerrainType, [Special])).to.deep.equal([
+              'Forest',
+              ['Coal (before)', 'Fish (after)', 'Game (square)'],
+              0,
+            ]);
+            expect(
+              convert(PlantForest, TerrainType, [Special, Shield])
+            ).to.deep.equal([
+              'Forest',
+              ['Coal (before)', 'Fish (after)', 'Game (square)'],
+              0,
+            ]);
+            expect(
+              convert(PlantForest, TerrainType, [Shield, Special])
+            ).to.deep.equal([
+              'Forest',
+              ['Coal (before)', 'Fish (after)', 'Game (square)'],
+              0,
+            ]);
+          });
+        }
+      });
     });
-  });
-});
+  })
+);
