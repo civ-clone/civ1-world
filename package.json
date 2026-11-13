@@ -40,7 +40,7 @@
   "dependencies": {
     "@civ-clone/base-government-tile-penalty": "^0.1.0",
     "@civ-clone/base-government-trade-bonus": "^0.1.0",
-    "@civ-clone/base-terrain-feature": "github:civ-clone/base-terrain-feature#feat/terrain-changed",
+    "@civ-clone/base-terrain-feature": "^0.1.0",
     "@civ-clone/civ1-earth-generator": "github:civ-clone/civ1-earth-generator",
     "@civ-clone/civ1-game": "github:civ-clone/civ1-game",
     "@civ-clone/core-engine": "^0.1.0",
@@ -54,7 +54,7 @@
     "@civ-clone/core-terrain": "^0.1.0",
     "@civ-clone/core-terrain-feature": "^0.1.0",
     "@civ-clone/core-tile-improvement": "^0.1.6",
-    "@civ-clone/core-world": "github:civ-clone/core-world#feat/terrain-changed",
+    "@civ-clone/core-world": "^0.1.24",
     "@civ-clone/core-world-generator": "^0.1.7",
     "@civ-clone/core-yield": "^0.1.0",
     "@civ-clone/library-government": "^0.1.0",
