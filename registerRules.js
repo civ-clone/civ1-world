@@ -12,6 +12,7 @@ const pillaged_1 = require("./Rules/TileImprovement/pillaged");
 const removed_1 = require("./Rules/TileImprovement/removed");
 const pick_start_tile_1 = require("./Rules/Player/pick-start-tile");
 const start_1 = require("./Rules/Engine/start");
+const terrain_changed_1 = require("./Rules/Tile/terrain-changed");
 const yield_1 = require("./Rules/Tile/yield");
 const yield_modifier_1 = require("./Rules/Tile/yield-modifier");
 const pick_generator_1 = require("./Rules/WorldGenerator/pick-generator");
@@ -20,7 +21,7 @@ const register = (game) => {
     // Where tile improvements can go, from the entries in `Requirements`: their rules come first, as they always did
     //  (civ-clone/web-renderer#37).
     game.requirements.add((0, available_1.deriveAvailableRules)(game.playerResearch, game.tileImprovements), ...Requirements_1.default);
-    game.rules.register(...(0, built_1.default)(game.tileImprovements, game.engine), ...(0, created_1.default)(game.rules, game.availableTerrainFeatures), ...(0, distribution_1.default)(), ...(0, distribution_groups_1.default)(), ...(0, feature_1.default)(game.terrainFeatures), ...(0, pillaged_1.default)(game.tileImprovements, game.engine), ...(0, removed_1.default)(game.tileImprovements, game.engine), ...(0, pick_start_tile_1.default)(game.earthStartTiles, game.engine, game.rng), ...(0, start_1.default)(game.rules, game.generators, game.engine), ...(0, yield_1.default)(game.tileImprovements, game.terrainFeatures), ...(0, yield_modifier_1.default)(game.tileImprovements, game.playerGovernments), ...(0, pick_generator_1.default)(game.generators, game.engine, game.rng));
+    game.rules.register(...(0, built_1.default)(game.tileImprovements, game.engine), ...(0, created_1.default)(game.rules, game.availableTerrainFeatures), ...(0, distribution_1.default)(), ...(0, distribution_groups_1.default)(), ...(0, feature_1.default)(game.terrainFeatures), ...(0, pillaged_1.default)(game.tileImprovements, game.engine), ...(0, removed_1.default)(game.tileImprovements, game.engine), ...(0, pick_start_tile_1.default)(game.earthStartTiles, game.engine, game.rng), ...(0, start_1.default)(game.rules, game.generators, game.engine), ...(0, terrain_changed_1.default)(game.terrainFeatures), ...(0, yield_1.default)(game.tileImprovements, game.terrainFeatures), ...(0, yield_modifier_1.default)(game.tileImprovements, game.playerGovernments), ...(0, pick_generator_1.default)(game.generators, game.engine, game.rng));
 };
 exports.register = register;
 // The plugin loader imports each package for this side effect. Until it passes

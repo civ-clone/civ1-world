@@ -9,6 +9,7 @@ import pillaged from './Rules/TileImprovement/pillaged';
 import removed from './Rules/TileImprovement/removed';
 import playerPickStartTile from './Rules/Player/pick-start-tile';
 import start from './Rules/Engine/start';
+import terrainChanged from './Rules/Tile/terrain-changed';
 import tileYield from './Rules/Tile/yield';
 import tileYieldModifier from './Rules/Tile/yield-modifier';
 import worldGeneratorPickGenerator from './Rules/WorldGenerator/pick-generator';
@@ -32,6 +33,7 @@ export const register = (game: Game): void => {
     ...removed(game.tileImprovements, game.engine),
     ...playerPickStartTile(game.earthStartTiles, game.engine, game.rng),
     ...start(game.rules, game.generators, game.engine),
+    ...terrainChanged(game.terrainFeatures),
     ...tileYield(game.tileImprovements, game.terrainFeatures),
     ...tileYieldModifier(game.tileImprovements, game.playerGovernments),
     ...worldGeneratorPickGenerator(game.generators, game.engine, game.rng)
