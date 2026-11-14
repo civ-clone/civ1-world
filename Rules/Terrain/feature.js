@@ -1,10 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getRules = void 0;
+exports.getRules = exports.SHIELD_CHANCE = void 0;
 const Terrains_1 = require("../../Terrains");
 const TerrainFeatures_1 = require("../../TerrainFeatures");
 const TerrainFeatureRegistry_1 = require("@civ-clone/core-terrain-feature/TerrainFeatureRegistry");
 const Feature_1 = require("@civ-clone/core-terrain-feature/Rules/Feature");
+// How often a Grassland (or River) square has a Shield. The Grassland a Jungle or a Swamp is cleared to rolls at the
+//  same odds (`Rules/Tile/terrain-changed`).
+exports.SHIELD_CHANCE = 0.5;
 const getRules = (terrainFeatureRegistry = TerrainFeatureRegistry_1.instance) => {
     const baseChance = 0.2;
     return [
@@ -18,7 +21,7 @@ const getRules = (terrainFeatureRegistry = TerrainFeatureRegistry_1.instance) =>
             [TerrainFeatures_1.Oasis, baseChance, Terrains_1.Desert],
             [TerrainFeatures_1.Oil, baseChance, Terrains_1.Swamp],
             [TerrainFeatures_1.Seal, baseChance, Terrains_1.Arctic],
-            [TerrainFeatures_1.Shield, 0.5, Terrains_1.Grassland, Terrains_1.River],
+            [TerrainFeatures_1.Shield, exports.SHIELD_CHANCE, Terrains_1.Grassland, Terrains_1.River],
         ].flatMap(([FeatureType, chance, ...terrains]) => terrains.flatMap((TerrainType) => (0, Feature_1.feature)(TerrainType, FeatureType, chance, terrainFeatureRegistry))),
     ];
 };
