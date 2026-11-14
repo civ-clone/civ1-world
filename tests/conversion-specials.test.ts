@@ -9,6 +9,9 @@ import ClearJungle from '@civ-clone/base-unit-action-clear-jungle/ClearJungle';
 import ClearSwamp from '@civ-clone/base-unit-action-clear-swamp/ClearSwamp';
 import PlantForest from '@civ-clone/base-unit-action-plant-forest/PlantForest';
 import Player from '@civ-clone/core-player/Player';
+import RuleRegistry from '@civ-clone/core-rule/RuleRegistry';
+import TerrainFeatureRegistry from '@civ-clone/core-terrain-feature/TerrainFeatureRegistry';
+import terrainChanged from '../Rules/Tile/terrain-changed';
 import Terrain from '@civ-clone/core-terrain/Terrain';
 import TerrainFeature from '@civ-clone/core-terrain-feature/TerrainFeature';
 import Tile from '@civ-clone/core-world/Tile';
@@ -246,4 +249,46 @@ describe('terrain conversions and the yield cache (civ-clone/web-renderer#1038)'
       }
     })
   );
+});
+
+// The rules given only a feature registry of their own (as before they took any other argument) roll the Grassland's
+//  Shield into that registry, and not into the game's.
+describe('terrain conversions on a feature registry of their own (civ-clone/web-renderer#1038)', (): void => {
+  it('rolls the Grassland a Jungle is cleared to for a Shield in that registry, half the time', (): void => {
+    const terrainFeatureRegistry = new TerrainFeatureRegistry(),
+      ruleRegistry = new RuleRegistry(),
+      gameFeatures = defaultGame.terrainFeatures.entries().length;
+
+    ruleRegistry.register(...terrainChanged(terrainFeatureRegistry));
+
+    const shields = Array.from({ length: SEEDS }, (_, i) => {
+      const tile = new Tile(
+        0,
+        0,
+        new Jungle(ruleRegistry),
+        null as unknown as World,
+        ruleRegistry
+      );
+
+      terrainFeatureRegistry.register(new Gems(tile.terrain()));
+
+      rng.restore(i + 1, 0);
+
+      tile.setTerrain(new Grassland(ruleRegistry));
+
+      const features = terrainFeatureRegistry.entries();
+
+      terrainFeatureRegistry.unregister(...features);
+
+      return names(features);
+    });
+
+    expect(
+      shields.filter((features) => !['', 'Shield'].includes(features)).length
+    ).to.equal(0);
+    expect(
+      shields.filter((features) => features === 'Shield').length / SEEDS
+    ).to.be.within(0.45, 0.55);
+    expect(defaultGame.terrainFeatures.entries().length).to.equal(gameFeatures);
+  });
 });

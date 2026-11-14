@@ -4,12 +4,12 @@ exports.getRules = exports.CLEAR_YIELD_CACHE = exports.TO_GRASSLAND = exports.TO
 const Terrains_1 = require("../../Terrains");
 const TerrainFeatures_1 = require("../../TerrainFeatures");
 const PlayerRegistry_1 = require("@civ-clone/core-player/PlayerRegistry");
-const RuleRegistry_1 = require("@civ-clone/core-rule/RuleRegistry");
 const TerrainFeatureRegistry_1 = require("@civ-clone/core-terrain-feature/TerrainFeatureRegistry");
 const replaceFeatures_1 = require("@civ-clone/base-terrain-feature/lib/replaceFeatures");
 const Criterion_1 = require("@civ-clone/core-rule/Criterion");
 const Effect_1 = require("@civ-clone/core-rule/Effect");
 const Feature_1 = require("@civ-clone/core-terrain-feature/Rules/Feature");
+const feature_1 = require("../Terrain/feature");
 const TerrainChanged_1 = require("@civ-clone/core-world/Rules/TerrainChanged");
 const changesTerrain_1 = require("@civ-clone/base-terrain-feature/lib/changesTerrain");
 exports.FOREST_TO_PLAINS = 'civ1-world:terrain-changed/forest-to-plains';
@@ -22,6 +22,11 @@ exports.CLEAR_YIELD_CACHE = 'civ1-world:terrain-changed/clear-yield-cache';
  * features (the `Created` rule), so whatever it rolled is taken off it first.
  * Then `replace` decides the square's features from the old terrain's, which
  * are all unregistered (civ-clone/web-renderer#1038).
+ *
+ * Taking off everything on the new terrain relies on it having just been made
+ * for this change, so all it holds is what it rolled. A feature that belongs
+ * to the square rather than the terrain (a river, once it is a `Watercourse`
+ * feature, G15) must be carried over by `replace`, not stripped here.
  */
 const convertFeatures = (terrainFeatureRegistry, replace) => (0, replaceFeatures_1.default)(terrainFeatureRegistry, (features, to, from, tile) => {
     const rolled = terrainFeatureRegistry.getByTerrain(to);
@@ -43,28 +48,35 @@ const convertFeatures = (terrainFeatureRegistry, replace) => (0, replaceFeatures
  *  `Watercourse` feature (civ-clone/web-renderer#1008, G15), exclude them here
  *  (`isResource` from base-terrain-feature) and carry them over instead.
  */
-const getRules = (terrainFeatureRegistry = TerrainFeatureRegistry_1.instance, ruleRegistry = RuleRegistry_1.instance, playerRegistry = PlayerRegistry_1.instance) => [
-    // Clearing a Forest: its Game becomes Horses on the Plains.
-    new TerrainChanged_1.default(exports.FOREST_TO_PLAINS, new Criterion_1.default((0, changesTerrain_1.default)([Terrains_1.Forest], [Terrains_1.Plains])), new Effect_1.default(convertFeatures(terrainFeatureRegistry, (features, to) => features.length > 0 ? [new TerrainFeatures_1.Horse(to)] : []))),
-    // Planting a Forest: Oil, Gems or Horses become Game. Grassland's Shield isn't a special resource, so it doesn't
-    //  carry over.
-    new TerrainChanged_1.default(exports.TO_FOREST, new Criterion_1.default((0, changesTerrain_1.default)([Terrains_1.Plains, Terrains_1.Grassland, Terrains_1.Jungle, Terrains_1.Swamp], [Terrains_1.Forest])), new Effect_1.default(convertFeatures(terrainFeatureRegistry, (features, to) => features.some((feature) => !(feature instanceof TerrainFeatures_1.Shield))
-        ? [new TerrainFeatures_1.Game(to)]
-        : []))),
-    // Clearing a Jungle or a Swamp: its special is lost, and the Grassland rolls for a Shield, here and only here. Any
-    //  Shield it was given before (when it was made, or by the conversion itself) has been taken off it, so the odds
-    //  are the Shield rule's own whatever made the conversion.
-    new TerrainChanged_1.default(exports.TO_GRASSLAND, new Criterion_1.default((0, changesTerrain_1.default)([Terrains_1.Jungle, Terrains_1.Swamp], [Terrains_1.Grassland])), new Effect_1.default(convertFeatures(terrainFeatureRegistry, (features, to) => {
-        ruleRegistry.process(Feature_1.default, TerrainFeatures_1.Shield, to);
-        return [];
-    }))),
-    // Nothing else works a square's yields out again when its terrain changes (`Tile.setTerrain` doesn't, and nothing
-    //  clears the cache at the start of a turn), so the old terrain's yields would stay, for nobody and for each player.
-    new TerrainChanged_1.default(exports.CLEAR_YIELD_CACHE, new Effect_1.default((tile) => {
-        tile.clearYieldCache(null);
-        playerRegistry.forEach((player) => tile.clearYieldCache(player));
-    })),
-];
+const getRules = (terrainFeatureRegistry = TerrainFeatureRegistry_1.instance, playerRegistry = PlayerRegistry_1.instance) => {
+    // The Grassland's Shield roll, built on the registry these rules move features in, so it can never land in another
+    //  one, at the odds a Grassland is made with.
+    const shieldRules = (0, Feature_1.feature)(Terrains_1.Grassland, TerrainFeatures_1.Shield, feature_1.SHIELD_CHANCE, terrainFeatureRegistry);
+    return [
+        // Clearing a Forest: its Game becomes Horses on the Plains.
+        new TerrainChanged_1.default(exports.FOREST_TO_PLAINS, new Criterion_1.default((0, changesTerrain_1.default)([Terrains_1.Forest], [Terrains_1.Plains])), new Effect_1.default(convertFeatures(terrainFeatureRegistry, (features, to) => features.length > 0 ? [new TerrainFeatures_1.Horse(to)] : []))),
+        // Planting a Forest: Oil, Gems or Horses become Game. Grassland's Shield isn't a special resource, so it doesn't
+        //  carry over.
+        new TerrainChanged_1.default(exports.TO_FOREST, new Criterion_1.default((0, changesTerrain_1.default)([Terrains_1.Plains, Terrains_1.Grassland, Terrains_1.Jungle, Terrains_1.Swamp], [Terrains_1.Forest])), new Effect_1.default(convertFeatures(terrainFeatureRegistry, (features, to) => features.some((feature) => !(feature instanceof TerrainFeatures_1.Shield))
+            ? [new TerrainFeatures_1.Game(to)]
+            : []))),
+        // Clearing a Jungle or a Swamp: its special is lost, and the Grassland rolls for a Shield, here and only here. Any
+        //  Shield it was given before (when it was made, or by the conversion itself) has been taken off it, so the odds
+        //  are the Shield rule's own whatever made the conversion.
+        new TerrainChanged_1.default(exports.TO_GRASSLAND, new Criterion_1.default((0, changesTerrain_1.default)([Terrains_1.Jungle, Terrains_1.Swamp], [Terrains_1.Grassland])), new Effect_1.default(convertFeatures(terrainFeatureRegistry, (features, to) => {
+            shieldRules
+                .filter((rule) => rule.validate(TerrainFeatures_1.Shield, to))
+                .forEach((rule) => rule.process(TerrainFeatures_1.Shield, to));
+            return [];
+        }))),
+        // Nothing else works a square's yields out again when its terrain changes (`Tile.setTerrain` doesn't, and nothing
+        //  clears the cache at the start of a turn), so the old terrain's yields would stay, for nobody and for each player.
+        new TerrainChanged_1.default(exports.CLEAR_YIELD_CACHE, new Effect_1.default((tile) => {
+            tile.clearYieldCache(null);
+            playerRegistry.forEach((player) => tile.clearYieldCache(player));
+        })),
+    ];
+};
 exports.getRules = getRules;
 exports.default = exports.getRules;
 //# sourceMappingURL=terrain-changed.js.map

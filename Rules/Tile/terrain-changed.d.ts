@@ -1,5 +1,4 @@
 import { PlayerRegistry } from '@civ-clone/core-player/PlayerRegistry';
-import { RuleRegistry } from '@civ-clone/core-rule/RuleRegistry';
 import { TerrainFeatureRegistry } from '@civ-clone/core-terrain-feature/TerrainFeatureRegistry';
 import TerrainChanged from '@civ-clone/core-world/Rules/TerrainChanged';
 export declare const FOREST_TO_PLAINS =
@@ -23,7 +22,6 @@ export declare const CLEAR_YIELD_CACHE =
  */
 export declare const getRules: (
   terrainFeatureRegistry?: TerrainFeatureRegistry,
-  ruleRegistry?: RuleRegistry,
   playerRegistry?: PlayerRegistry
 ) => TerrainChanged[];
 export default getRules;

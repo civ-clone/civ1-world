@@ -35,6 +35,10 @@ import {
 import Terrain from '@civ-clone/core-terrain/Terrain';
 import TerrainFeature from '@civ-clone/core-terrain-feature/TerrainFeature';
 
+// How often a Grassland (or River) square has a Shield. The Grassland a Jungle or a Swamp is cleared to rolls at the
+//  same odds (`Rules/Tile/terrain-changed`).
+export const SHIELD_CHANCE = 0.5;
+
 export const getRules: (
   terrainFeatureRegistry?: TerrainFeatureRegistry
 ) => Feature[] = (
@@ -54,7 +58,7 @@ export const getRules: (
         [Oasis, baseChance, Desert],
         [Oil, baseChance, Swamp],
         [Seal, baseChance, Arctic],
-        [Shield, 0.5, Grassland, River],
+        [Shield, SHIELD_CHANCE, Grassland, River],
       ] as [typeof TerrainFeature, number, ...(typeof Terrain)[]][]
     ).flatMap(
       ([FeatureType, chance, ...terrains]: [

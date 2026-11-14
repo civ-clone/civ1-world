@@ -35,6 +35,9 @@ type Conversion =
 //  second draw doesn't. Clearing a Jungle or a Swamp draws twice: the
 //  conversion rolls for a Shield, and the Grassland's rule takes that one off
 //  and rolls again, which is the roll that counts (civ-clone/web-renderer#1038).
+//  If the shared base-unit-action-clear-jungle/-clear-swamp conversions stop
+//  rolling for a Shield themselves, the deciding roll becomes the first draw
+//  and this must change back.
 const shieldSeed = (wanted: boolean): number => {
   for (let seed = 1; ; seed++) {
     rng.restore(seed, 0);
