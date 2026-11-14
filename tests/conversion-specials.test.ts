@@ -8,6 +8,7 @@ import ClearForest from '@civ-clone/base-unit-action-clear-forest/ClearForest';
 import ClearJungle from '@civ-clone/base-unit-action-clear-jungle/ClearJungle';
 import ClearSwamp from '@civ-clone/base-unit-action-clear-swamp/ClearSwamp';
 import PlantForest from '@civ-clone/base-unit-action-plant-forest/PlantForest';
+import Player from '@civ-clone/core-player/Player';
 import Terrain from '@civ-clone/core-terrain/Terrain';
 import TerrainFeature from '@civ-clone/core-terrain-feature/TerrainFeature';
 import Tile from '@civ-clone/core-world/Tile';
@@ -177,51 +178,72 @@ describe('terrain conversions, on the game registries, over many seeds (civ-clon
 // Nothing else works a square's yields out again when its terrain changes: `Tile.setTerrain` doesn't, and nothing
 //  clears the cache at the start of a turn.
 describe('terrain conversions and the yield cache (civ-clone/web-renderer#1038)', (): void => {
-  const yields = (tile: Tile): string =>
+  const yields = (tile: Tile, player: Player | null): string =>
     tile
-      .yields(null)
+      .yields(player)
       .map((tileYield) => `${tileYield.constructor.name} ${tileYield.value()}`)
       .join(', ');
 
-  it('works out a converted square’s yields from its new terrain', (): void => {
-    const tile = new Tile(
-        0,
-        0,
-        new Forest(defaultGame.rules),
-        null as unknown as World,
-        defaultGame.rules
-      ),
-      plains = new Tile(
-        1,
-        0,
-        new Plains(defaultGame.rules),
-        null as unknown as World,
-        defaultGame.rules
+  // A square nobody works is read for nobody (`null`), and a worked one for the player working it, so both caches have
+  //  to go.
+  (
+    [
+      ['for nobody', (): Player | null => null],
+      ['for a player', (): Player | null => new Player(defaultGame.rules)],
+    ] as [string, () => Player | null][]
+  ).forEach(([label, makePlayer]): void =>
+    it(`works out a converted square’s yields from its new terrain ${label}`, (): void => {
+      const player = makePlayer();
+
+      if (player !== null) {
+        defaultGame.players.register(player);
+      }
+
+      const tile = new Tile(
+          0,
+          0,
+          new Forest(defaultGame.rules),
+          null as unknown as World,
+          defaultGame.rules
+        ),
+        plains = new Tile(
+          1,
+          0,
+          new Plains(defaultGame.rules),
+          null as unknown as World,
+          defaultGame.rules
+        );
+
+      [tile, plains].forEach((tile) =>
+        defaultGame.terrainFeatures.unregister(
+          ...defaultGame.terrainFeatures.getByTerrain(tile.terrain())
+        )
       );
 
-    [tile, plains].forEach((tile) =>
+      const before = yields(tile, player);
+
+      ClearForest.complete(
+        new ClearForest(
+          tile,
+          tile,
+          null as never,
+          defaultGame.rules,
+          defaultGame.terrainFeatures
+        ) as never
+      );
+
       defaultGame.terrainFeatures.unregister(
         ...defaultGame.terrainFeatures.getByTerrain(tile.terrain())
-      )
-    );
+      );
 
-    const before = yields(tile);
-
-    ClearForest.complete(
-      new ClearForest(
-        tile,
-        tile,
-        null as never,
-        defaultGame.rules,
-        defaultGame.terrainFeatures
-      ) as never
-    );
-
-    defaultGame.terrainFeatures.unregister(
-      ...defaultGame.terrainFeatures.getByTerrain(tile.terrain())
-    );
-
-    expect(yields(plains)).to.not.equal(before);
-    expect(yields(tile)).to.equal(yields(plains));
-  });
+      try {
+        expect(yields(plains, player)).to.not.equal(before);
+        expect(yields(tile, player)).to.equal(yields(plains, player));
+      } finally {
+        if (player !== null) {
+          defaultGame.players.unregister(player);
+        }
+      }
+    })
+  );
 });
