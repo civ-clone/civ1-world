@@ -240,19 +240,66 @@ describe('civ1Distance', (): void => {
     })
   );
 
-  it('should fall back to storage x and y on a hexagonal world, which has no square axes', (): void => {
-    const at = onTopology(10, 8, new HexOddRTopology(10, 8));
+  it('should measure every pair on a hexagonal world as the fewest hex steps between them', (): void => {
+    (
+      [
+        [10, 8, true],
+        [7, 6, true],
+        [6, 5, false],
+      ] as [number, number, boolean][]
+    ).forEach(([width, height, wrapY]): void => {
+      const topology = new HexOddRTopology(width, height, wrapY),
+        at = onTopology(width, height, topology);
 
-    for (let x1 = 0; x1 < 10; x1++) {
-      for (let y1 = 0; y1 < 8; y1++) {
-        for (let x2 = 0; x2 < 10; x2++) {
-          for (let y2 = 0; y2 < 8; y2++) {
-            expect(civ1Distance(at(x1, y1), at(x2, y2))).to.equal(
-              storageDistance(10, 8, x1, y1, x2, y2)
-            );
+      for (let x1 = 0; x1 < width; x1++) {
+        for (let y1 = 0; y1 < height; y1++) {
+          // Steps outward from the first tile, one ring of neighbours at a time.
+          const steps = new Map<string, number>([[`${x1},${y1}`, 0]]);
+          let ring: Pair[] = [[x1, y1]];
+
+          for (let step = 1; ring.length > 0; step++) {
+            ring = ring
+              .flatMap(([x, y]) =>
+                topology
+                  .directions()
+                  .map((direction) => topology.neighbour(x, y, direction))
+              )
+              .filter((tile): tile is Pair => tile !== null)
+              .filter(([x, y]) => !steps.has(`${x},${y}`));
+
+            ring.forEach(([x, y]) => steps.set(`${x},${y}`, step));
+          }
+
+          for (let x2 = 0; x2 < width; x2++) {
+            for (let y2 = 0; y2 < height; y2++) {
+              expect(civ1Distance(at(x1, y1), at(x2, y2))).to.equal(
+                steps.get(`${x2},${y2}`)
+              );
+            }
           }
         }
       }
-    }
+    });
   });
+
+  (
+    [
+      // Ten rows straight down is ten steps, five `se` and five `sw`; the storage formula made it 10 too.
+      [10, 10, 10, 20, 10],
+      // Five columns across and ten rows down: ten diagonal steps cover the five columns, so 10, where the storage
+      // formula made it 12.
+      [10, 10, 15, 20, 10],
+      // Across the east-west seam: column 79 to column 1 on the same row is two `e`.
+      [79, 10, 1, 10, 2],
+      // Across the north-south seam: row 49 to row 1 is two rows down.
+      [10, 49, 10, 1, 2],
+    ] as [number, number, number, number, number][]
+  ).forEach(([x1, y1, x2, y2, expected]): void =>
+    it(`should measure (${x1}, ${y1}) to (${x2}, ${y2}) on an 80x50 hexagonal world as ${expected}`, (): void => {
+      const at = onTopology(80, 50, new HexOddRTopology(80, 50));
+
+      expect(civ1Distance(at(x1, y1), at(x2, y2))).to.equal(expected);
+      expect(civ1Distance(at(x2, y2), at(x1, y1))).to.equal(expected);
+    })
+  );
 });
