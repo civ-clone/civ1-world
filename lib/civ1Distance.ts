@@ -14,8 +14,12 @@ const longerPlusHalfShorter = (dx: number, dy: number): number =>
  *
  * The axes are the world's logical ones (`ITopology.logicalDelta`): `x` and `y` on the square grid, so the result
  * there is what it has always been, and the logical (`a`, `b`) on a staggered isometric grid, so a city's distance
- * from its capital means the same on either. A grid with no square axes (hexagonal), or a world from a copy of
- * core-world that predates `logicalDelta`, falls back to the storage `x` and `y`, as before.
+ * from its capital means the same on either.
+ *
+ * A grid with no square axes, the hexagonal one, has no diagonal steps to count as half either: every neighbour shares
+ * an edge and is one step away. There, the distance is the topology's own, the fewest steps between the two, the short
+ * way round (civ-clone/web-renderer#95). A world from a copy of core-world that predates `logicalDelta` falls back to
+ * the storage `x` and `y`, as before.
  *
  * `GetShortestDistance` in v474.05, and p. 224 of Wilson, J.L & Emrich A. (1992). Sid Meier's Civilization, or Rome
  * on 640K a Day. Rocklin, CA: Prima Publishing. `Tile#distanceFrom` stays the engine's general straight-line measure.
@@ -30,6 +34,10 @@ export const civ1Distance = (from: Tile, to: Tile): number => {
 
   if (delta) {
     return longerPlusHalfShorter(Math.abs(delta[0]), Math.abs(delta[1]));
+  }
+
+  if (topology && typeof topology.logicalDelta === 'function') {
+    return topology.distance(from.x(), from.y(), to.x(), to.y());
   }
 
   const width = map.width(),
