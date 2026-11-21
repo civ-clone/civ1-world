@@ -15,8 +15,10 @@ import {
   instance as tileImprovementRegistryInstance,
 } from '@civ-clone/core-tile-improvement/TileImprovementRegistry';
 import Criterion from '@civ-clone/core-rule/Criterion';
+import Description from '@civ-clone/core-rule/Description';
 import Effect from '@civ-clone/core-rule/Effect';
 import { High, Low, Normal } from '@civ-clone/core-rule/Priorities';
+import { Land } from '@civ-clone/core-terrain/Types';
 import Player from '@civ-clone/core-player/Player';
 import PlayerGovernment from '@civ-clone/core-government/PlayerGovernment';
 import { Pollution, Railroad } from '../../TileImprovements';
@@ -48,6 +50,9 @@ const playerGovernment = (
   }
 };
 
+/** What a Railroad adds to each of a square's yields, as a share of what the square already gives (rounded down). */
+export const RAILROAD_BONUS: number = 0.5;
+
 export const getRules: (
   tileImprovementRegistry?: TileImprovementRegistry,
   playerGovernmentRegistry?: PlayerGovernmentRegistry
@@ -57,9 +62,9 @@ export const getRules: (
 ) => [
   ...(
     [
-      [Food, 0.5],
-      [Production, 0.5],
-      [Trade, 0.5],
+      [Food, RAILROAD_BONUS],
+      [Production, RAILROAD_BONUS],
+      [Trade, RAILROAD_BONUS],
     ] as [typeof Yield, number][]
   ).map(
     ([YieldType, multiplier]): YieldModifier =>
@@ -89,7 +94,16 @@ export const getRules: (
               )
             );
           }
-        )
+        ),
+        // What it adds, for the Civilopedia (civ-clone/web-renderer#620): on any land square, as a Railroad can be
+        //  built on every land terrain (`Requirements`) and the rule asks only for the Railroad.
+        new Description({
+          type: 'improvement_yield_percent',
+          subject: Land,
+          yield: YieldType,
+          value: multiplier,
+          improvement: Railroad,
+        })
       )
   ),
 
