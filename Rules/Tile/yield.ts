@@ -34,6 +34,7 @@ import {
   instance as tileImprovementRegistryInstance,
 } from '@civ-clone/core-tile-improvement/TileImprovementRegistry';
 import Criterion from '@civ-clone/core-rule/Criterion';
+import Description from '@civ-clone/core-rule/Description';
 import Effect from '@civ-clone/core-rule/Effect';
 import Terrain from '@civ-clone/core-terrain/Terrain';
 import TerrainFeature from '@civ-clone/core-terrain-feature/TerrainFeature';
@@ -41,6 +42,22 @@ import Tile from '@civ-clone/core-world/Tile';
 import TileImprovement from '@civ-clone/core-tile-improvement/TileImprovement';
 import TileYield from '@civ-clone/core-world/Rules/Yield';
 import Yield from '@civ-clone/core-yield/Yield';
+
+/** The trade each Ocean square gives. */
+export const OCEAN_TRADE: number = 2;
+
+/** The trade each River square gives. */
+export const RIVER_TRADE: number = 1;
+
+/** The trade a Road adds on the terrains in `roadTradeTerrains`. */
+export const ROAD_TRADE: number = 1;
+
+/** The terrains a Road adds `ROAD_TRADE` to. */
+export const roadTradeTerrains: (typeof Terrain)[] = [
+  Desert,
+  Grassland,
+  Plains,
+];
 
 export const getRules: (
   tileImprovementRegistry?: TileImprovementRegistry,
@@ -71,7 +88,14 @@ export const getRules: (
         new Criterion(
           (tile: Tile): boolean => tile.terrain() instanceof TerrainType
         ),
-        new Effect((): Yield => new YieldType(value, TerrainType.name))
+        new Effect((): Yield => new YieldType(value, TerrainType.name)),
+        // What it gives, for the Civilopedia (civ-clone/web-renderer#620).
+        new Description({
+          type: 'terrain_yield',
+          subject: TerrainType,
+          yield: YieldType,
+          value,
+        })
       )
   ),
 
@@ -110,12 +134,24 @@ export const getRules: (
 
   new TileYield(
     new Criterion((tile: Tile): boolean => tile.terrain() instanceof Ocean),
-    new Effect((): Yield => new Trade(2, Ocean.name))
+    new Effect((): Yield => new Trade(OCEAN_TRADE, Ocean.name)),
+    new Description({
+      type: 'terrain_yield',
+      subject: Ocean,
+      yield: Trade,
+      value: OCEAN_TRADE,
+    })
   ),
 
   new TileYield(
     new Criterion((tile: Tile): boolean => tile.terrain() instanceof River),
-    new Effect((): Yield => new Trade(1))
+    new Effect((): Yield => new Trade(RIVER_TRADE)),
+    new Description({
+      type: 'terrain_yield',
+      subject: River,
+      yield: Trade,
+      value: RIVER_TRADE,
+    })
   ),
 
   // Irrigation and mines, as v474.05 applies them (`-1 - IrrigationEffect`, `-1 - MiningEffect` from `GameData.cs`
@@ -151,11 +187,18 @@ export const getRules: (
                 improvement instanceof Improvement
             )
         ),
-        new Effect((): Yield => new YieldType(value, Improvement.name))
+        new Effect((): Yield => new YieldType(value, Improvement.name)),
+        new Description({
+          type: 'improvement_yield',
+          subject: ImprovedTerrain,
+          yield: YieldType,
+          value,
+          improvement: Improvement,
+        })
       )
   ),
 
-  ...[Desert, Grassland, Plains].map(
+  ...roadTradeTerrains.map(
     (TerrainType: typeof Terrain): TileYield =>
       new TileYield(
         new Criterion(
@@ -169,7 +212,14 @@ export const getRules: (
                 improvement instanceof Road
             )
         ),
-        new Effect((): Yield => new Trade(1, Road.name))
+        new Effect((): Yield => new Trade(ROAD_TRADE, Road.name)),
+        new Description({
+          type: 'improvement_yield',
+          subject: TerrainType,
+          yield: Trade,
+          value: ROAD_TRADE,
+          improvement: Road,
+        })
       )
   ),
 ];
