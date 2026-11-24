@@ -13,7 +13,13 @@ import {
   Tundra,
 } from '../Terrains';
 import { Food, Production, Trade } from '../Yields';
-import { Irrigation, Mine, Railroad, Road } from '../TileImprovements';
+import {
+  Irrigation,
+  Mine,
+  Pollution,
+  Railroad,
+  Road,
+} from '../TileImprovements';
 import tileYieldModifier, {
   RAILROAD_BONUS,
 } from '../Rules/Tile/yield-modifier';
@@ -154,7 +160,11 @@ describe('descriptions', (): void => {
         getByTile: (): TileImprovement[] => [Object.create(Railroad.prototype)],
       } as unknown as TileImprovementRegistry);
 
-    expect(rules.flatMap((rule) => rule.descriptions())).to.eql(
+    expect(
+      rules
+        .flatMap((rule) => rule.descriptions())
+        .filter(({ subject }) => subject !== Pollution)
+    ).to.eql(
       yieldTypes.map((YieldType) => ({
         type: 'improvement_yield_percent',
         subject: Land,
@@ -173,7 +183,9 @@ describe('descriptions', (): void => {
 
     // Run each: 4 of a yield on a square with a Railroad gets the described share of it more.
     rules
-      .filter((rule) => rule.descriptions().length > 0)
+      .filter((rule) =>
+        rule.descriptions().some(({ improvement }) => improvement === Railroad)
+      )
       .forEach((rule): void => {
         const [description] = rule.descriptions(),
           YieldType = description.yield as typeof Yield,
@@ -187,5 +199,39 @@ describe('descriptions', (): void => {
           current.slice(1).map((added: Yield): number => added.value())
         ).to.eql([4 * (description.value as number)]);
       });
+  });
+
+  it('Pollution halves the food, shields and trade of its square, rounded up', (): void => {
+    const tile = {} as unknown as Tile,
+      rules = tileYieldModifier({
+        getByTile: (): TileImprovement[] => [
+          Object.create(Pollution.prototype),
+        ],
+      } as unknown as TileImprovementRegistry).filter((rule) =>
+        rule.descriptions().some(({ subject }) => subject === Pollution)
+      );
+
+    expect(rules.flatMap((rule) => rule.descriptions())).to.eql(
+      yieldTypes.map((YieldType) => ({
+        type: 'tile_yield_halved',
+        subject: Pollution,
+        yield: YieldType,
+      }))
+    );
+
+    // Run each: 5 of its yield becomes 3.
+    rules.forEach((rule): void => {
+      const [description] = rule.descriptions(),
+        YieldType = description.yield as typeof Yield,
+        current: Yield[] = [new YieldType(5)];
+
+      expect(rule.validate(tile, null, current)).to.equal(true);
+
+      rule.process(tile, null, current);
+
+      expect(
+        current.reduce((total: number, each: Yield) => total + each.value(), 0)
+      ).to.equal(3);
+    });
   });
 });

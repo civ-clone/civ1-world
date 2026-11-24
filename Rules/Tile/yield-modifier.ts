@@ -180,7 +180,13 @@ export const getRules: (
 
             yields.push(new YieldType(halved - currentTotal, Pollution.name));
           }
-        )
+        ),
+        // What it does, for the Civilopedia (civ-clone/web-renderer#621).
+        new Description({
+          type: 'tile_yield_halved',
+          subject: Pollution,
+          yield: YieldType,
+        })
       )
   ),
 ];

@@ -83,6 +83,12 @@ const getRules = (tileImprovementRegistry = TileImprovementRegistry_1.instance, 
             return;
         }
         yields.push(new YieldType(halved - currentTotal, TileImprovements_1.Pollution.name));
+    }), 
+    // What it does, for the Civilopedia (civ-clone/web-renderer#621).
+    new Description_1.default({
+        type: 'tile_yield_halved',
+        subject: TileImprovements_1.Pollution,
+        yield: YieldType,
     }))),
 ];
 exports.getRules = getRules;
