@@ -65,6 +65,7 @@ describe('civ1-world requirements', (): void => {
       'civ1-world:tile-improvement/available/Road',
       'civ1-world:tile-improvement/available/bridge/Road',
       'civ1-world:tile-improvement/available/Railroad',
+      'civ1-world:tile-improvement/available/Fortress',
     ]);
     expect(ids(game.rules.get(Available))).eql(ids(getRules()));
   });

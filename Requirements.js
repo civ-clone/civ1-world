@@ -47,6 +47,21 @@ exports.availableRequirements = [
         Terrains_1.Swamp,
         Terrains_1.Tundra,
     ]),
+    // Settlers can build one on any land square once Construction is known (v474.05 `CONTROL.C`, the 'f' order;
+    //  civ-clone/web-renderer#388). civ1-unit refuses it on a city's square, as v474.05 does.
+    tileImprovement('Fortress', TileImprovements_1.Fortress, [Advances_1.Construction], [
+        Terrains_1.Arctic,
+        Terrains_1.Desert,
+        Terrains_1.Forest,
+        Terrains_1.Grassland,
+        Terrains_1.Hills,
+        Terrains_1.Jungle,
+        Terrains_1.Mountains,
+        Terrains_1.Plains,
+        Terrains_1.River,
+        Terrains_1.Swamp,
+        Terrains_1.Tundra,
+    ]),
 ];
 exports.default = exports.availableRequirements;
 //# sourceMappingURL=Requirements.js.map
