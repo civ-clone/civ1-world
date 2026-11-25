@@ -4,5 +4,5 @@ import { IWorld } from '@civ-clone/core-world/World';
  *  keeps in a save. The engine's `earth` option is what chooses that generator, before there is a world, and isn't
  *  saved, so a rule that reads it after a load is told "no" (civ-clone/web-renderer#175).
  */
-export declare const isEarth: (world: IWorld) => boolean;
+export declare const isEarth: (world: IWorld | null) => boolean;
 export default isEarth;
