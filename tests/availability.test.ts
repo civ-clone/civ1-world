@@ -1,8 +1,15 @@
 import {
   BridgeBuilding,
+  Construction,
   Railroad as RailroadAdvance,
 } from '@civ-clone/library-science/Advances';
-import { Irrigation, Mine, Railroad, Road } from '../TileImprovements';
+import {
+  Fortress,
+  Irrigation,
+  Mine,
+  Railroad,
+  Road,
+} from '../TileImprovements';
 import Available from '@civ-clone/core-tile-improvement/Rules/Available';
 import Player from '@civ-clone/core-player/Player';
 import PlayerResearch from '@civ-clone/core-science/PlayerResearch';
@@ -202,6 +209,79 @@ describe('tile-improvement:availability', async (): Promise<void> => {
           playerResearch.complete().pop();
         },
         ' once you have discovered Railroad and there is an existing Road',
+      ],
+      [
+        Fortress,
+        [],
+        [
+          world.get(0, 0), // Arctic
+          world.get(2, 0), // Desert
+          world.get(4, 0), // Forest
+          world.get(6, 0), // Grassland
+          world.get(8, 0), // Hills
+          world.get(10, 0), // Jungle
+          world.get(12, 0), // Mountains
+          world.get(16, 0), // Plains
+          world.get(18, 0), // River
+          world.get(20, 0), // Swamp
+          world.get(22, 0), // Tundra
+          world.get(14, 0), // Ocean
+        ],
+        null,
+        null,
+        ' without discovering Construction',
+      ],
+      [
+        Fortress,
+        [
+          world.get(0, 0), // Arctic
+          world.get(2, 0), // Desert
+          world.get(4, 0), // Forest
+          world.get(6, 0), // Grassland
+          world.get(8, 0), // Hills
+          world.get(10, 0), // Jungle
+          world.get(12, 0), // Mountains
+          world.get(16, 0), // Plains
+          world.get(18, 0), // River
+          world.get(20, 0), // Swamp
+          world.get(22, 0), // Tundra
+        ],
+        [
+          world.get(14, 0), // Ocean
+        ],
+        () => playerResearch.addAdvance(Construction),
+        () => playerResearch.complete().pop(),
+        ' once you have discovered Construction',
+      ],
+      [
+        Fortress,
+        [],
+        [
+          world.get(0, 0), // Arctic
+          world.get(2, 0), // Desert
+          world.get(4, 0), // Forest
+          world.get(6, 0), // Grassland
+          world.get(8, 0), // Hills
+          world.get(10, 0), // Jungle
+          world.get(12, 0), // Mountains
+          world.get(16, 0), // Plains
+          world.get(18, 0), // River
+          world.get(20, 0), // Swamp
+          world.get(22, 0), // Tundra
+        ],
+        (tile: Tile) => {
+          tileImprovementRegistry.register(new Fortress(tile, ruleRegistry));
+
+          playerResearch.addAdvance(Construction);
+        },
+        (tile: Tile) => {
+          tileImprovementRegistry.unregister(
+            ...tileImprovementRegistry.getByTile(tile)
+          );
+
+          playerResearch.complete().pop();
+        },
+        ' where there is one already',
       ],
     ] as [
       typeof TileImprovement,

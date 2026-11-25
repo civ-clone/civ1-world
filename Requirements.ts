@@ -13,9 +13,10 @@ import {
 } from './Terrains';
 import {
   BridgeBuilding,
+  Construction,
   Railroad as RailroadAdvance,
 } from '@civ-clone/library-science/Advances';
-import { Irrigation, Mine, Railroad, Road } from './TileImprovements';
+import { Fortress, Irrigation, Mine, Railroad, Road } from './TileImprovements';
 import { Requirement, Target } from '@civ-clone/core-requirement/Requirement';
 import Terrain from '@civ-clone/core-terrain/Terrain';
 import TileImprovement from '@civ-clone/core-tile-improvement/TileImprovement';
@@ -71,6 +72,26 @@ export const availableRequirements: Requirement[] = [
     'Railroad',
     Railroad,
     [RailroadAdvance, Road],
+    [
+      Arctic,
+      Desert,
+      Forest,
+      Grassland,
+      Hills,
+      Jungle,
+      Mountains,
+      Plains,
+      River,
+      Swamp,
+      Tundra,
+    ]
+  ),
+  // Settlers can build one on any land square once Construction is known (v474.05 `CONTROL.C`, the 'f' order;
+  //  civ-clone/web-renderer#388). civ1-unit refuses it on a city's square, as v474.05 does.
+  tileImprovement(
+    'Fortress',
+    Fortress,
+    [Construction],
     [
       Arctic,
       Desert,
