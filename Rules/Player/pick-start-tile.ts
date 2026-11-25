@@ -15,6 +15,7 @@ import StartTilePicker from '@civ-clone/base-world-start/lib/StartTilePicker';
 import Tile from '@civ-clone/core-world/Tile';
 import World from '@civ-clone/core-world/World';
 import civ1Distance from '../../lib/civ1Distance';
+import isEarth from '../../lib/earth';
 import { instance as rngInstance } from '@civ-clone/core-random';
 
 // v474.05 only starts a civilization on a continent with at least this many
@@ -42,7 +43,7 @@ export const getRules = (
 ): PickStartTile[] => [
   new PickStartTile(
     new Effect((world: World, player: Player, usedStartSquares: Tile[]) => {
-      if (engine.option('earth', false)) {
+      if (isEarth(world)) {
         try {
           return earthStartTileRegistry.getStartTileByCivilizationAndWorld(
             player.civilization().sourceClass(),

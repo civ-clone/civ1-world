@@ -1,4 +1,5 @@
 import { Grassland, Ocean } from '../Terrains';
+import Earth from '@civ-clone/civ1-earth-generator/Earth';
 import Engine from '@civ-clone/core-engine/Engine';
 import LandMassRegistry from '@civ-clone/core-world/LandMassRegistry';
 import Loader from '@civ-clone/simple-world-generator/tests/lib/Loader';
@@ -11,7 +12,10 @@ import Tile from '@civ-clone/core-world/Tile';
 import World from '@civ-clone/core-world/World';
 import civ1Distance from '../lib/civ1Distance';
 import { expect } from 'chai';
+import isEarth from '../lib/earth';
 import pickStartTile from '../Rules/Player/pick-start-tile';
+import { instance as earthStartTileRegistryInstance } from '@civ-clone/civ1-earth-generator/EarthStartTileRegistry';
+import '@civ-clone/civ1-earth-generator/registerEarthStartTiles';
 
 const width = 20,
   height = 12,
@@ -96,6 +100,51 @@ describe('player:pick-start-tile', (): void => {
 
       expect(tile).to.be.instanceOf(Tile);
       expect(isContinent(tile!)).to.equal(false);
+    });
+  });
+
+  describe('on the Earth', (): void => {
+    const pickOn = (world: World, engine: Engine): Tile | undefined => {
+      const ruleRegistry = new RuleRegistry(),
+        rules = new RuleRegistry(),
+        player = new Player(ruleRegistry),
+        [startTile] = earthStartTileRegistryInstance.entries(),
+        CivilizationType = startTile.civilizationType();
+
+      player.setCivilization(new CivilizationType());
+      rules.register(...pickStartTile(undefined, engine, () => 0));
+
+      const [tile] = rules.process(PickStartTile, world, player, []);
+
+      return tile;
+    };
+
+    it("starts a civilization on its own square, from the world alone: a loaded game has no 'earth' option", async (): Promise<void> => {
+      const world = await new World(
+          new Earth(),
+          new RuleRegistry(),
+          new LandMassRegistry()
+        ).build(),
+        [startTile] = earthStartTileRegistryInstance.entries();
+
+      expect(isEarth(world)).true;
+      expect(pickOn(world, new Engine())).equal(
+        startTile.startTileForMap(world)
+      );
+    });
+
+    it("doesn't treat a world as the Earth for the option alone", async (): Promise<void> => {
+      const { world } = await setUp(),
+        engine = new Engine();
+
+      engine.setOption('earth', true);
+
+      expect(isEarth(world)).false;
+
+      const tile = pickOn(world, engine);
+
+      expect(tile).not.undefined;
+      expect(isContinent(tile!)).true;
     });
   });
 });
